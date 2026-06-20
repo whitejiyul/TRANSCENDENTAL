@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Custom Infectious Smile</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #000; touch-action: none; font-family: sans-serif; }
+        /* 조이스틱 UI */
+        #ui-left { position: absolute; bottom: 50px; left: 30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; }
+        #joystick-stick { width: 50px; height: 50px; background: #fff; border-radius: 50%; }
+        /* 크로스헤어 */
+        #crosshair { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; pointer-events: none; }
+        /* 상태 표시 UI */
+        #info { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10; font-size: 14px; pointer-events: none; }
+        #danger-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 10px solid red; box-sizing: border-box; z-index: 20; pointer-events: none; display: none; }
+    </style>
+</head>
+<body>
+
+<div id="info">상태: Human (미로를 탈출하세요)</div>
+<div id="danger-overlay"></div>
+<div id="crosshair"></div>
+<div id="ui-left"><div id="joystick-stick"></div></div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// --- 1. 기본 설정 및 라이팅 ---
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a0a0a);
+scene.fog = new THREE.Fog(0x0a0a0a, 0, 40); // 음산한 안개
+
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+const ambientLight = new THREE.AmbientLight(0x404040); // 기본 주변광
+scene.add(ambientLight);
+
+const light = new THREE.PointLight(0xffffff, 300, 30); // 1인칭 후레쉬
+camera.add(light);
+scene.add(camera);
+
+// --- 2. 상태 관리 ---
+let playerStatus = 'human'; // 'human' or 'smiler'
+let isDead = false;
+
+// --- 3. 맵 생성 (대형 미로) ---
+const UNIT_SIZE = 4;
+const mazeGrid = [
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+    [1,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1], // 2는 스폰 구역
+    [1,2,2,0,1,0,1,0,1,1,1,1,1,1,1,0,0,1],
+    [1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,1],
+    [1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1],
+    [1,0,1,3,0,0,0,0,0,0,1,3,1,0,0,0,0,1], // 3은 하얀 액체
+    [1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1],
+    [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
+    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+];
+
+const walls = [];
+const safeZone = new THREE.Group();
+const liquidPuddles = [];
+
+mazeGrid.forEach((row, r) => {
+    row.forEach((type, c) => {
+        const x = c * UNIT_SIZE;
+        const z = r * UNIT_SIZE;
+
+        if (type === 1) { // 벽
+            const geo = new THREE.BoxGeometry(UNIT_SIZE, 3, UNIT_SIZE);
+            const mat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.1 });
+            const wall = new THREE.Mesh(geo, mat);
+            wall.position.set(x, 1.5, z);
+            scene.add(wall);
+            walls.push(wall);
+        } else {
+            // 바닥 (기본)
+            const floorGeo = new THREE.PlaneGeometry(UNIT_SIZE, UNIT_SIZE);
+            let floorMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
+            
+            if (type === 2) { // 스폰 구역 (주황색)
+                floorMat = new THREE.MeshStandardMaterial({ color: 0xffa500 });
+                // 스폰 지역 충돌 박스
+                const safeBoxGeo = new THREE.BoxGeometry(UNIT_SIZE, 0.5, UNIT_SIZE);
+                const safeBoxMat = new THREE.MeshBasicMaterial({visible: false});
+                const safeBox = new THREE.Mesh(safeBoxGeo, safeBoxMat);
+                safeBox.position.set(x, 0, z);
+                safeZone.add(safeBox);
+            } else if (type === 3) { // 하얀 액체 (네온 하양)
+                floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 2 });
+                // 액체 충돌 박스
+                const puddleGeo = new THREE.BoxGeometry(UNIT_SIZE * 0.8, 0.1, UNIT_SIZE * 0.8);
+                const puddleMat = new THREE.MeshBasicMaterial({visible: false});
+                const puddle = new THREE.Mesh(puddleGeo, puddleMat);
+                puddle.position.set(x, 0.05, z);
+                liquidPuddles.push(puddle);
+            }
+
+            const floor = new THREE.Mesh(floorGeo, floorMat);
+            floor.rotation.x = -Math.PI / 2;
+            floor.position.set(x, 0, z);
+            scene.add(floor);
+        }
+    });
+});
+scene.add(safeZone);
+
+// --- 4. 엔티티 생성 (Smilers, Humans) ---
+const smilers = [];
+const humans = [];
+
+function spawnEntity(type, color, array) {
+    const geo = new THREE.BoxGeometry(1, 2, 1);
+    const mat = new THREE.MeshStandardMaterial({ color: color });
+    const mesh = new THREE.Mesh(geo, mat);
+    
+    // 무작위 위치 스폰 (벽 안 피하기)
+    let posR, posC;
+    do {
+        posR = Math.floor(Math.random() * mazeGrid.length);
+        posC = Math.floor(Math.random() * mazeGrid[0].length);
+    } while (mazeGrid[posR][posC] !== 0); // 빈 공간에만 스폰
+
+    mesh.position.set(posC * UNIT_SIZE, 1, posR * UNIT_SIZE);
+    scene.add(mesh);
+    array.push({ mesh, target: null, wanderDir: new THREE.Vector3(1, 0, 0) });
+}
+
+for(let i=0; i<15; i++) spawnEntity('smiler', 0xffeb3b, smilers); // 스마일러 (노랑)
+for(let i=0; i<10; i++) spawnEntity('human', 0xffffff, humans);  // 사람 (하양)
+
+// --- 5. 플레이어 스폰 위치 ---
+camera.position.set(UNIT_SIZE, 1.6, UNIT_SIZE); // 스폰 구역 내
+
+// --- 6. 입력 처리 (조이스틱 + 오른쪽 스와이프 시점) ---
+const stick = document.getElementById('joystick-stick');
+const uiInfo = document.getElementById('info');
+const dangerOverlay = document.getElementById('danger-overlay');
+
+let moveDir = { x: 0, z: 0 };
+let joystickTouching = false;
+let rotationDeltaLon = 0; // 시점 회전값 (경도)
+
+// 화면 회전용 (오른쪽 스와이프)
+let rotationTouchStartX = 0;
+let isRotationTouching = false;
+const HALF_WIDTH = window.innerWidth / 2;
+
+// 왼쪽 조이스틱
+stick.parentElement.addEventListener('touchstart', (e) => joystickTouching = true);
+window.addEventListener('touchstart', (e) => {
+    // 터치 위치가 오른쪽이면 화면 회전 시작
+    if (e.touches[0].clientX > HALF_WIDTH) {
+        isRotationTouching = true;
+        rotationTouchStartX = e.touches[0].clientX;
+    }
+});
+
+window.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+    
+    for (let t of e.changedTouches) {
+        if (t.clientX < HALF_WIDTH && joystickTouching) {
+            // 조이스틱 로직
+            const container = stick.parentElement.getBoundingClientRect();
+            const centerX = container.left + container.width / 2;
+            const centerY = container.top + container.height / 2;
+            let dx = t.clientX - centerX;
+            let dy = t.clientY - centerY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+            const maxDist = 50;
+            if(dist > maxDist) { dx *= maxDist / dist; dy *= maxDist / dist; }
+            stick.style.transform = `translate(${dx}px, ${dy}px)`;
+            moveDir.x = dx / maxDist; moveDir.z = dy / maxDist;
+        } else if (t.clientX > HALF_WIDTH && isRotationTouching) {
+            // 오른쪽 스와이프 시점 회전 로직
+            const dx = t.clientX - rotationTouchStartX;
+            rotationDeltaLon = dx * 0.005; // 민감도 조절
+            rotationTouchStartX = t.clientX;
+        }
+    }
+}, { passive: false });
+
+const endTouch = () => {
+    joystickTouching = false; isRotationTouching = false;
+    stick.style.transform = `translate(0, 0)`; moveDir = { x: 0, z: 0 };
+    rotationDeltaLon = 0;
+};
+window.addEventListener('touchend', endTouch);
+window.addEventListener('touchcancel', endTouch);
+
+// --- 7. 감지 로직 (벽 시야 체크) ---
+function isTargetVisible(attacker, target, raycaster) {
+    if(!attacker || !target) return false;
+    const attackerPos = new THREE.Vector3().setFromMatrixPosition(attacker.matrixWorld);
+    const targetPos = new THREE.Vector3().setFromMatrixPosition(target.matrixWorld);
+    const dir = new THREE.Vector3().subVectors(targetPos, attackerPos).normalize();
+    const dist = attackerPos.distanceTo(targetPos);
+    
+    raycaster.set(attackerPos, dir);
+    raycaster.far = dist; // 타겟 거리까지만 체크
+    
+    // 벽과의 충돌만 체크
+    const intersects = raycaster.intersectObjects(walls);
+    return intersects.length === 0; // 중간에 벽이 없어야 감지됨
+}
+
+const checkRaycaster = new THREE.Raycaster();
+
+// --- 8. 게임 루프 (AI 및 상태 처리) ---
+let cameraLon = -Math.PI / 2; // 초기 시점
+
+function animate() {
+    requestAnimationFrame(animate);
+    if(isDead) return;
+
+    // 시점 회전 (스와이프값 반영)
+    cameraLon -= rotationDeltaLon;
+    // 시점 회전값을 고려하여 카메라가 앞을 바라보게 함
+    const targetX = Math.cos(cameraLon);
+    const targetZ = Math.sin(cameraLon);
+    camera.lookAt(camera.position.x + targetX, 1.6, camera.position.z + targetZ);
+
+    // 이동 로직 (시점 방향 고려)
+    const speed = 0.15;
+    const forward = new THREE.Vector3(targetX, 0, targetZ);
+    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0), forward);
+    
+    camera.position.add(forward.multiplyScalar(-moveDir.z * speed)); // 전후
+    camera.position.add(right.multiplyScalar(moveDir.x * speed));    // 좌우
+    camera.position.y = 1.6; // 사람 눈높이 유지
+
+    // --- AI 업데이트 (스마일러 및 사람) ---
+    // 플레이어 감지용 충돌 박스
+    const playerBox = new THREE.Box3().setFromCenterAndSize(camera.position, new THREE.Vector3(1, 2, 1));
+
+    // 8-1. 스마일러 AI 로직
+    smilers.forEach((s, index) => {
+        const sPos = s.mesh.position;
+        // 스폰 구역(Safe Zone) 충돌 체크
+        let inSafeZone = false;
+        safeZone.children.forEach(box => {
+            if(new THREE.Box3().setFromObject(box).containsPoint(sPos)) inSafeZone = true;
+        });
+
+        if (inSafeZone) { // 스폰 지역에 닿으면 사망
+            scene.remove(s.mesh); smilers.splice(index, 1); return;
+        }
+
+        // 타겟 감지 (인간일 때만 플레이어 감지)
+        if (playerStatus === 'human') {
+            if(isTargetVisible(s.mesh, camera, checkRaycaster)) s.target = camera;
+            else if(s.target === camera) s.target = null; // 시야에서 사라지면 타겟 해제
+        } else { // 플레이어가 스마일러면 타겟 해제
+            if(s.target === camera) s.target = null;
+        }
+
+        // 사람 AI 감지
+        humans.forEach(h => {
+            if(isTargetVisible(s.mesh, h.mesh, checkRaycaster)) {
+                // 더 가까운 타겟 설정
+                if(!s.target || s.mesh.position.distanceTo(h.mesh.position) < s.mesh.position.distanceTo(s.target.position)) s.target = h.mesh;
+            }
+        });
+
+        // 이동 로직 (추적 or 배회)
+        if (s.target) {
+            const dir = new THREE.Vector3().subVectors(s.target.position, sPos).normalize();
+            s.mesh.position.add(dir.multiplyScalar(0.04)); // 추적 속도
+            if(s.target === camera) dangerOverlay.style.display = 'block'; // 플레이어 추적 시 빨간 테두리
+        } else {
+            // 배회 모드 (간단하게 구현)
+            s.mesh.position.add(s.wanderDir.clone().multiplyScalar(0.02));
+            if(frame % 100 === 0) s.wanderDir = new THREE.Vector3(Math.random()*2-1, 0, Math.random()*2-1).normalize();
+        }
+
+        // 플레이어 감염 체크 (닿으면 사망 및 스마일러화)
+        if (playerStatus === 'human' && sPos.distanceTo(camera.position) < 1.5) {
+            infectPlayer();
+        }
+    });
+
+    // 8-2. 사람 AI 로직 (간단한 배회 및 감염)
+    humans.forEach((h, hIndex) => {
+        h.mesh.position.add(h.wanderDir.clone().multiplyScalar(0.02));
+        if(frame % 120 === 0) h.wanderDir = new THREE.Vector3(Math.random()*2-1, 0, Math.random()*2-1).normalize();
+        
+        // 스마일러와 충돌 체크 (스마일러로 변신)
+        smilers.forEach(s => {
+            if(h.mesh.position.distanceTo(s.mesh.position) < 1.2) {
+                // 인간 제거, 스마일러 스폰
+                spawnEntity('smiler', 0xffeb3b, smilers);
+                scene.remove(h.mesh); humans.splice(hIndex, 1);
+            }
+        });
+    });
+
+    // 8-3. 하얀 액체 충돌 체크 (감염)
+    liquidPuddles.forEach(puddle => {
+        if (playerStatus === 'human' && new THREE.Box3().setFromObject(puddle).intersectsBox(playerBox)) {
+            infectPlayer();
+        }
+    });
+
+    frame++; renderer.render(scene, camera);
+}
+let frame = 0; animate();
+
+// --- 9. 감염 함수 (스마일러화) ---
+function infectPlayer() {
+    if(playerStatus === 'smiler') return;
+    playerStatus = 'smiler';
+    uiInfo.textContent = "상태: Smiler (이제 모든 사람을 감염시키세요)";
+    uiInfo.style.color = "#ffeb3b";
+    
+    // 플레이어 외형 변경 (간단하게 색상 변경 효과)
+    ambientLight.color.set(0xffeb3b); // 주변광 노랗게
+    dangerOverlay.style.display = 'none'; // 추적 해제
+}
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+});
+</script>
+</body>
+</html>
