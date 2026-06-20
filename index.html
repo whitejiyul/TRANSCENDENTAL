@@ -12,7 +12,7 @@
             touch-action: none; -webkit-user-select: none; user-select: none;
         }
         canvas { display: block; position: absolute; top: 0; z-index: 1; transition: border 0.3s; }
-        #ui-layer { position: absolute; top: 0; height: 100%; z-index: 2; pointer-events: none; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
         
         #overlay { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
@@ -65,6 +65,7 @@
         input:checked + .slider:before { transform: translateX(20px); }
 
         #hud { position: absolute; top: 20px; left: 20px; text-shadow: 0 0 8px #000; }
+        #life-display { position: absolute; top: 8px; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: 900; color: #ff3366; text-shadow: 0 0 5px #ff0000; letter-spacing: 2px; }
         #timer-bar-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.05); }
         #timer-bar { height: 100%; background: #fff; width: 100%; }
         
@@ -72,7 +73,7 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             display: none; pointer-events: all; text-align: center; background: rgba(4,2,12,0.98);
             padding: 30px 20px; border: 2px solid #ff3366; box-shadow: 0 0 35px rgba(255,51,102,0.25);
-            border-radius: 16px; width: 84%; max-width: 360px;
+            border-radius: 16px; width: 84%; max-width: 360px; z-index: 50;
         }
         h1 { font-weight: 900; letter-spacing: 3px; margin: 0; font-size: 1.5rem; }
 
@@ -100,6 +101,12 @@
             transition: all 0.2s;
         }
         #dodge-exit-btn:hover { background: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.8); }
+
+        #test-mode-modal {
+            background: rgba(4, 2, 12, 0.85); border-color: #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.15);
+        }
+        .test-input { background: #111; color: #fff; border: 1px solid #333; padding: 4px; font-family: 'Orbitron'; margin-bottom: 8px; text-align: center; width: 60px; }
+        .test-select { background: #111; color: #fff; border: 1px solid #333; padding: 4px; font-family: 'Orbitron'; margin-bottom: 8px; }
     </style>
 </head>
 <body>
@@ -108,6 +115,7 @@
 
     <div id="ui-layer">
         <button id="dodge-exit-btn" onclick="forceExitDodge()">X EXIT</button>
+        <div id="life-display" style="display:none;"></div>
 
         <div id="init-lang-popup" class="popup-panel">
             <h2 style="font-size:1.1rem; margin-top:0; letter-spacing:1px; color:#00ffff;">SELECT LANGUAGE</h2>
@@ -147,7 +155,7 @@
                 <div class="mode-panel">
                     <div class="mode-container">
                         <span class="toggle-label" id="label-dodge-mode" style="color: #00ffcc;"></span>
-                        <label class="switch"><input type="checkbox" id="dodge-mode-toggle"><span class="slider"></span></label>
+                        <label class="switch"><input type="checkbox" id="dodge-mode-toggle" checked><span class="slider"></span></label>
                     </div>
                     <div class="mode-container">
                         <span class="toggle-label" id="label-hard-mode" style="color: #ff3355;"></span>
@@ -171,10 +179,30 @@
             <div id="tab-record" class="tab-content">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                     <div style="font-size:0.8rem; font-weight:900; color:#ffaa00;" id="label-sector-board"></div>
-                    <button class="stage-btn" style="padding:2px 8px; font-size:0.6rem; border-color:#ff3333;" id="btn-wipe-data" onclick="clearAllData()"></button>
+                    <div>
+                        <button class="stage-btn" style="padding:2px 8px; font-size:0.6rem; border-color:#00ffff; background:rgba(0,255,255,0.1); margin-right:5px;" onclick="openTestMode()">테스트 모드</button>
+                        <button class="stage-btn" style="padding:2px 8px; font-size:0.6rem; border-color:#ff3333;" id="btn-wipe-data" onclick="clearAllData()"></button>
+                    </div>
                 </div>
                 <div class="record-panel" id="record-board-target"></div>
             </div>
+        </div>
+
+        <div id="test-mode-modal" class="modal-window">
+            <h2 style="color:#00ffff; margin-top:0; font-size: 1.2rem;">TEST PATTERN</h2>
+            <div style="text-align: left; padding-left: 20px;">
+                <label style="font-size:0.8rem; color:#aaa;">MODE:</label> 
+                <select id="test-mode-select" class="test-select">
+                    <option value="normal">NORMAL</option>
+                    <option value="hard">HARD</option>
+                </select><br>
+                <label style="font-size:0.8rem; color:#aaa;">STAGE (0~7):</label> 
+                <input type="number" id="test-stage-input" class="test-input" min="0" max="7" value="0"><br>
+                <label style="font-size:0.8rem; color:#aaa;">PATTERN (0~4):</label> 
+                <input type="number" id="test-pattern-input" class="test-input" min="0" max="4" value="0"><br>
+            </div>
+            <button class="stage-btn" style="margin-top:15px; width:100%; border-color:#00ffcc;" onclick="startTestMode()">START TEST</button>
+            <button class="stage-btn" style="margin-top:5px; width:100%; border-color:#ff3366;" onclick="closeTestMode()">CANCEL</button>
         </div>
 
         <div id="continue-confirm" class="modal-window">
@@ -282,6 +310,12 @@ let infinityPatternPool = [];
 let isDodgeMode = false;
 let isHardMode = false;
 let dodgeHitCount = 0;
+let playerLife = 3;
+let pInvincibility = 0;
+
+let isTestMode = false;
+let testStageParam = 0;
+let testPatternParam = 0;
 
 let gameRecords = JSON.parse(localStorage.getItem('trans_records_v4_2026')) || {};
 
@@ -370,26 +404,6 @@ function renderRecordBoard() {
         `;
         target.appendChild(row);
     });
-    
-    let infNt = gameRecords['inf_normal_time'] ? gameRecords['inf_normal_time'].toFixed(2) + 's' : '---';
-    let infHt = gameRecords['inf_hard_time'] ? gameRecords['inf_hard_time'].toFixed(2) + 's' : '---';
-    let infNd = gameRecords['inf_normal_dodge'] !== undefined ? gameRecords['inf_normal_dodge'] + ' HITS' : '---';
-    let infHd = gameRecords['inf_hard_dodge'] !== undefined ? gameRecords['inf_hard_dodge'] + ' HITS' : '---';
-    
-    let infRow = document.createElement('div');
-    infRow.className = 'record-item';
-    infRow.style.background = 'rgba(200,0,255,0.06)';
-    infRow.style.marginTop = '6px';
-    infRow.innerHTML = `
-        <div class="record-row-line" style="color:#cc00ff; font-weight:900;">
-            <span>🌌 INFINITY SECTOR</span>
-        </div>
-        <div class="record-row-line" style="color:#ccc; font-size:0.68rem; margin-left:4px;">
-            <span>NOR TIME: <b style="color:#fff;">${infNt}</b> (🎯 DG: <b style="color:#00ffcc;">${infNd}</b>)</span>
-            <span>HARD TIME: <b style="color:#ff2244;">${infHt}</b> (🎯 DG: <b style="color:#ffaa00;">${infHd}</b>)</span>
-        </div>
-    `;
-    target.appendChild(infRow);
 }
 
 function clearAllData() {
@@ -439,20 +453,12 @@ function drawBackground() {
 
 function resize() {
     let w = window.innerWidth;
-    if (deviceMode === 'mobile') {
-        w = Math.min(window.innerWidth, 480);
-    }
+    if (deviceMode === 'mobile') { w = Math.min(window.innerWidth, 480); }
     canvas.width = w;
     canvas.height = window.innerHeight;
-    
     canvas.style.left = '50%';
     canvas.style.transform = 'translateX(-50%)';
     
-    let uiLayer = document.getElementById('ui-layer');
-    uiLayer.style.width = w + 'px';
-    uiLayer.style.left = '50%';
-    uiLayer.style.transform = 'translateX(-50%)';
-
     if(deviceMode === 'mobile' && window.innerWidth > w) {
         canvas.style.borderLeft = '1px solid rgba(255,255,255,0.05)';
         canvas.style.borderRight = '1px solid rgba(255,255,255,0.05)';
@@ -460,7 +466,6 @@ function resize() {
         canvas.style.borderLeft = 'none';
         canvas.style.borderRight = 'none';
     }
-
     if(!isRunning) { player.x = canvas.width / 2; player.y = canvas.height * 0.75; }
     initBackground();
 }
@@ -471,6 +476,7 @@ function showMain() {
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('continue-confirm').style.display = 'none';
     document.getElementById('dodge-exit-btn').style.display = 'none';
+    document.getElementById('life-display').style.display = 'none';
     document.getElementById('overlay').style.display = 'block';
     ctx.clearRect(0,0,canvas.width,canvas.height);
 }
@@ -480,37 +486,65 @@ function forceExitDodge() {
     showMain();
 }
 
-function startGame(idx, infinityOption) {
+function openTestMode() {
+    document.getElementById('test-mode-modal').style.display = 'block';
+}
+function closeTestMode() {
+    document.getElementById('test-mode-modal').style.display = 'none';
+}
+function startTestMode() {
+    isTestMode = true;
+    isHardMode = document.getElementById('test-mode-select').value === 'hard';
+    testStageParam = parseInt(document.getElementById('test-stage-input').value) || 0;
+    testPatternParam = parseInt(document.getElementById('test-pattern-input').value) || 0;
+    document.getElementById('test-mode-modal').style.display = 'none';
+    
+    document.getElementById('dodge-mode-toggle').checked = true; // 강제 돋지(테스트) 모드
+    startGame(testStageParam, false, true);
+}
+
+function updateLifeUI() {
+    let hearts = "";
+    for(let i=0; i<playerLife; i++) hearts += "❤️";
+    for(let i=playerLife; i<3; i++) hearts += "🖤";
+    document.getElementById('life-display').innerText = `LIFE: ${hearts}`;
+}
+
+function startGame(idx, infinityOption, testFlag = false) {
     resize();
+    isTestMode = testFlag;
     stageIdx = idx; isInfinityMode = infinityOption;
     stackCount = 1; hasPrompted60s = false; isPausedForChoice = false;
     bullets = []; glassShards = []; infinityPatternPool = []; playerHistory = [];
     dodgeHitCount = 0; frame = 0; startTime = Date.now();
+    playerLife = 3; pInvincibility = 0;
     
     isDodgeMode = document.getElementById('dodge-mode-toggle').checked;
-    isHardMode = document.getElementById('hard-mode-toggle').checked;
+    if(!isTestMode) isHardMode = document.getElementById('hard-mode-toggle').checked;
     
     player.r = isHardMode ? 2.5 : 5.0;
 
-    if(isDodgeMode) {
+    if(isDodgeMode || isTestMode) {
+        document.getElementById('life-display').style.display = 'none';
         document.getElementById('dodge-hit-counter').style.display = 'block';
         document.getElementById('dodge-hit-counter').innerText = "🎯 DODGE HIT: 0";
-        document.getElementById('dodge-exit-btn').style.display = 'block';
     } else {
+        document.getElementById('life-display').style.display = 'block';
         document.getElementById('dodge-hit-counter').style.display = 'none';
-        document.getElementById('dodge-exit-btn').style.display = 'none';
+        updateLifeUI();
     }
-
+    
+    document.getElementById('dodge-exit-btn').style.display = 'block';
     document.getElementById('overlay').style.display = 'none';
     document.getElementById('game-over').style.display = 'none';
     document.getElementById('continue-confirm').style.display = 'none';
     
-    let modeTag = "";
-    if(isDodgeMode && isHardMode) modeTag = "🎯💀 DG+HARD ";
-    else if(isHardMode) modeTag = "💀 HARD ";
-    else if(isDodgeMode) modeTag = "🎯 DODGE ";
+    let modeTag = isHardMode ? "💀 HARD " : (isDodgeMode ? "🎯 DODGE " : "");
 
-    if(isInfinityMode) {
+    if (isTestMode) {
+        document.getElementById('cur-stage-name').innerText = modeTag + "TEST PATTERN";
+        document.getElementById('cur-stage-name').style.color = "#00ffff";
+    } else if(isInfinityMode) {
         document.getElementById('cur-stage-name').innerText = modeTag + "INFINITY";
         document.getElementById('cur-stage-name').style.color = isHardMode ? "#ff1155" : "#cc00ff";
         addRandomPatternToPool();
@@ -622,13 +656,6 @@ class PremiumBullet {
                     this.vx = (dx/(d+1))*3.36; this.vy = (dy/(d+1))*3.36;
                 }
                 break;
-
-            case 'zet_fold_90':
-                if(this.life === 40) {
-                    let temp = this.vx; this.vx = -this.vy * 1.04; this.vy = temp * 1.04;
-                }
-                break;
-
             case 'lim_stop_go':
                 if(this.life === 30) { this.p1 = this.vx; this.p2 = this.vy; this.vx = 0; this.vy = 0; }
                 if(this.life === 60) { this.vx = this.p1 * 2.0; this.vy = this.p2 * 2.0; }
@@ -664,7 +691,8 @@ function spawnLayerPattern(stage, pId) {
         }
         else if (stage === 1) {
             if (pId === 0 && frame % 20 === 0) bullets.push(new PremiumBullet(cx, cy, Math.cos(frame*0.08)*1.8, Math.sin(frame*0.08)*1.8, 5, color, 'normal'));
-            if (pId === 1 && frame % 25 === 0) bullets.push(new PremiumBullet(cx, cy, Math.cos(-frame*0.06)*2.0, Math.sin(-frame*0.06)*2.0, 4.5, '#55ffee', 'normal'));
+            // 리메이크: 1's 2번째 패턴
+            if (pId === 1 && frame % 30 === 0) { let t = frame*0.05; for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(t+(Math.PI/2)*i)*2.5, Math.sin(t+(Math.PI/2)*i)*2.5, 5, '#00ffff', 'shift_angle_run', 0.02)); }
             if (pId === 2 && frame % 65 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.2)*2.3, Math.sin(ta+i*0.2)*2.3, 5.5, color, 'normal')); }
             if (pId === 3 && frame % 15 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 2.2, 4, color, 'sine_wave', 2.0));
             if (pId === 4 && frame % 80 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/8)*i)*1.5, Math.sin((Math.PI*2/8)*i)*1.5, 6, '#fff', 'normal')); }
@@ -677,15 +705,18 @@ function spawnLayerPattern(stage, pId) {
             if (pId === 4 && frame % 75 === 0) { for(let i=0; i<12; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/12)*i)*150, cy + Math.sin((Math.PI*2/12)*i)*150, 0, 0, 5, color, 'ring_collapse', cx, cy)); }
         }
         else if (stage === 3) {
-            if (pId === 0 && frame % 70 === 0) { for(let x=canvas.width/4; x<canvas.width; x+=canvas.width/2) bullets.push(new PremiumBullet(x, -20, 0, 1.5, 5, color, 'normal')); }
-            if (pId === 1 && frame % 60 === 0) { for(let x=canvas.width/6; x<canvas.width; x+=canvas.width/3) bullets.push(new PremiumBullet(x, canvas.height+20, 0, -1.5, 5, color, 'normal')); }
+            // 리메이크: 100's 1번째 패턴
+            if (pId === 0 && frame % 40 === 0) { for(let i=0; i<3; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.5, 5, color, 'accelerate')); bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.5, 0, 5, color, 'accelerate')); } }
+            // 리메이크: 100's 2번째 패턴
+            if (pId === 1 && frame % 45 === 0) { let a = Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx+Math.cos(a)*200, cy+Math.sin(a)*200, -Math.cos(a)*1.5, -Math.sin(a)*1.5, 6, '#ffaa00', 'sine_wave', 2)); }
             if (pId === 2 && frame % 45 === 0) bullets.push(new PremiumBullet(-20, player.y, 3.0, 0, 4.5, '#ffcc00', 'normal'));
             if (pId === 3 && frame % 45 === 0) bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.0, 0, 4.5, '#ffcc00', 'normal'));
             if (pId === 4 && frame % 40 === 0) bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*4, (Math.random()-0.5)*4, 5, '#fff', 'normal'));
         }
         else if (stage === 4) {
             if (pId === 0 && frame % 35 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, (Math.random()-0.5)*2, 1.8, 5, color, 'normal')); }
-            if (pId === 1 && frame % 50 === 0) { for(let i=0; i<16; i++) { let a=(Math.PI*2/16)*i; bullets.push(new PremiumBullet(cx+Math.cos(a)*100, cy+Math.sin(a)*100, Math.cos(a)*1.2, Math.sin(a)*1.2, 4.5, '#ff7722', 'normal')); } }
+            // 리메이크: 10000's 일반 2번째 패턴
+            if (pId === 1 && frame % 55 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta + (i-2)*0.2)*3, Math.sin(ta + (i-2)*0.2)*3, 5, '#ff5500', 'normal')); }
             if (pId === 2 && frame % 15 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, (Math.random()-0.5)*1, (Math.random()-0.5)*1, 4, color, 'normal'));
             if (pId === 3 && frame % 40 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*3.0, Math.sin(ta)*3.0, 6, '#fff', 'normal')); }
             if (pId === 4 && frame % 65 === 0) { let t=frame*0.02; for(let i=0; i<6; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*2, Math.cos(t+i)*2, 5, color, 'normal')); }
@@ -713,67 +744,69 @@ function spawnLayerPattern(stage, pId) {
         }
     } else {
         if (stage === 0) {
-            if (pId === 0 && frame % 35 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.6, 7.5, '#ff3355', 'hard_bend_two', 2.56));
-            if (pId === 1 && frame % 38 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.6, 7.5, '#ff3355', 'hard_bend_two', 2.56));
-            if (pId === 2 && frame % 48 === 0) { bullets.push(new PremiumBullet(-15, player.y, 0.8, 0, 6, '#ffaa00', 'void_cross_boom')); bullets.push(new PremiumBullet(canvas.width+15, player.y, -0.8, 0, 6, '#ffaa00', 'void_cross_boom')); }
-            if (pId === 3 && frame % 66 === 0) { for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx+Math.cos((Math.PI/2)*i)*150, cy+Math.sin((Math.PI/2)*i)*150, 0, 0, 6, '#333333', 'void_sink_black')); }
-            if (pId === 4 && frame % 78 === 0) { let ta=Math.atan2(player.y-(-20), player.x-cx); bullets.push(new PremiumBullet(cx, -20, Math.cos(ta)*3.6, Math.sin(ta)*3.6, 16, '#ff0000', 'normal')); }
+            if (pId === 0 && frame % 55 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.0, 7.5, '#ff3355', 'hard_bend_two', 1.5));
+            if (pId === 1 && frame % 60 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.0, 7.5, '#ff3355', 'hard_bend_two', 1.5));
+            if (pId === 2 && frame % 75 === 0) { bullets.push(new PremiumBullet(-15, player.y, 0.5, 0, 6, '#ffaa00', 'void_cross_boom')); bullets.push(new PremiumBullet(canvas.width+15, player.y, -0.5, 0, 6, '#ffaa00', 'void_cross_boom')); }
+            if (pId === 3 && frame % 100 === 0) { for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx+Math.cos((Math.PI/2)*i)*150, cy+Math.sin((Math.PI/2)*i)*150, 0, 0, 6, '#333333', 'void_sink_black')); }
+            if (pId === 4 && frame % 120 === 0) { let ta=Math.atan2(player.y-(-20), player.x-cx); bullets.push(new PremiumBullet(cx, -20, Math.cos(ta)*2.2, Math.sin(ta)*2.2, 16, '#ff0000', 'normal')); }
         }
         else if (stage === 1) {
-            if (pId === 0 && frame % 12 === 0) bullets.push(new PremiumBullet(cx + Math.cos(frame*0.14)*260, cy + Math.sin(frame*0.14)*260, 0, 0, 5, '#00ffcc', 'hard_vortex_sink', cx, cy));
-            if (pId === 1 && frame % 17 === 0) bullets.push(new PremiumBullet(cx + Math.cos(-frame*0.1)*300, cy + Math.sin(-frame*0.1)*300, 0, 0, 5.5, '#ff00ff', 'prime_blade_in', cx, cy));
-            if (pId === 2 && frame % 54 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.15)*3.2, Math.sin(ta+i*0.15)*3.2, 5, '#ffffff', 'normal')); }
-            if (pId === 3 && frame % 12 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 2.4, 4.5, color, 'sine_wave', 3.6)); bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 2.4, 0, 4.5, color, 'cos_wave', 3.6)); }
-            if (pId === 4 && frame % 66 === 0) { for(let i=0; i<10; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/10)*i)*2.4, Math.sin((Math.PI*2/10)*i)*2.4, 6, '#ffff00', 'prime_return_ring')); }
+            if (pId === 0 && frame % 20 === 0) bullets.push(new PremiumBullet(cx + Math.cos(frame*0.14)*260, cy + Math.sin(frame*0.14)*260, 0, 0, 5, '#00ffcc', 'hard_vortex_sink', cx, cy));
+            if (pId === 1 && frame % 25 === 0) bullets.push(new PremiumBullet(cx + Math.cos(-frame*0.1)*300, cy + Math.sin(-frame*0.1)*300, 0, 0, 5.5, '#ff00ff', 'prime_blade_in', cx, cy));
+            if (pId === 2 && frame % 85 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.15)*2.0, Math.sin(ta+i*0.15)*2.0, 5, '#ffffff', 'normal')); }
+            if (pId === 3 && frame % 20 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.5, 4.5, color, 'sine_wave', 2.2)); bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 1.5, 0, 4.5, color, 'cos_wave', 2.2)); }
+            if (pId === 4 && frame % 100 === 0) { for(let i=0; i<10; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/10)*i)*1.5, Math.sin((Math.PI*2/10)*i)*1.5, 6, '#ffff00', 'prime_return_ring')); }
         }
         else if (stage === 2) {
-            if (pId === 0 && frame % 42 === 0) { for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/5)*i+(frame*0.01))*2.0, Math.sin((Math.PI*2/5)*i+(frame*0.01))*2.0, 6, '#ffff00', 'hard_bounce_laser')); }
-            if (pId === 1 && frame % 48 === 0) { bullets.push(new PremiumBullet(player.x, -15, 0, 2.8, 5.5, color, 'order_mirror_chase')); }
-            if (pId === 2 && frame % 18 === 0) { bullets.push(new PremiumBullet(8, player.y, 4, 0, 6, '#ff0055', 'normal')); bullets.push(new PremiumBullet(canvas.width-8, player.y, -4, 0, 6, '#ff0055', 'normal')); }
-            if (pId === 3 && frame % 30 === 0) { let rot=frame*0.09; for(let i=0; i<4; i++) { let a = rot+(Math.PI/2)*i; let dir=(frame%50<25)?1:-1; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*2.0, Math.sin(a)*2.0, 5, '#00ffff', 'shift_angle_run', 0.016*dir)); } }
-            if (pId === 4 && frame % 60 === 0) { for(let i=0; i<16; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/16)*i)*240, cy + Math.sin((Math.PI*2/16)*i)*240, 0, 0, 6, '#ff33ff', 'ring_collapse', cx, cy)); }
+            if (pId === 0 && frame % 65 === 0) { for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/5)*i+(frame*0.01))*1.2, Math.sin((Math.PI*2/5)*i+(frame*0.01))*1.2, 6, '#ffff00', 'hard_bounce_laser')); }
+            if (pId === 1 && frame % 75 === 0) { bullets.push(new PremiumBullet(player.x, -15, 0, 1.7, 5.5, color, 'order_mirror_chase')); }
+            if (pId === 2 && frame % 30 === 0) { bullets.push(new PremiumBullet(8, player.y, 2.4, 0, 6, '#ff0055', 'normal')); bullets.push(new PremiumBullet(canvas.width-8, player.y, -2.4, 0, 6, '#ff0055', 'normal')); }
+            if (pId === 3 && frame % 45 === 0) { let rot=frame*0.09; for(let i=0; i<4; i++) { let a = rot+(Math.PI/2)*i; let dir=(frame%50<25)?1:-1; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.2, Math.sin(a)*1.2, 5, '#00ffff', 'shift_angle_run', 0.01*dir)); } }
+            if (pId === 4 && frame % 90 === 0) { for(let i=0; i<16; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/16)*i)*240, cy + Math.sin((Math.PI*2/16)*i)*240, 0, 0, 6, '#ff33ff', 'ring_collapse', cx, cy)); }
         }
         else if (stage === 3) {
-            if (pId === 0 && frame % 18 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 3.6, 5, '#ffa500', 'normal')); bullets.push(new PremiumBullet(-20, player.y, 3.6, 0, 5, '#ffa500', 'normal')); }
-            if (pId === 1 && frame % 24 === 0) { bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -3.6, 5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.6, 0, 5, '#ff5500', 'normal')); }
-            if (pId === 2 && frame % 48 === 0) { for(let y=0; y<canvas.height; y+=60) bullets.push(new PremiumBullet(-25, y, 4.0, 0, 4, '#ff00ff', 'normal')); }
-            if (pId === 3 && frame % 48 === 0) { for(let y=30; y<canvas.height; y+=60) bullets.push(new PremiumBullet(canvas.width+25, y, -4.0, 0, 4, '#00ffff', 'normal')); }
-            if (pId === 4 && frame % 10 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*7.2, (Math.random()-0.5)*7.2, 4, '#ffffff', 'normal')); }
+            if (pId === 0 && frame % 30 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 2.2, 5, '#ffa500', 'normal')); bullets.push(new PremiumBullet(-20, player.y, 2.2, 0, 5, '#ffa500', 'normal')); }
+            if (pId === 1 && frame % 38 === 0) { bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -2.2, 5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -2.2, 0, 5, '#ff5500', 'normal')); }
+            if (pId === 2 && frame % 75 === 0) { for(let y=0; y<canvas.height; y+=60) bullets.push(new PremiumBullet(-25, y, 2.4, 0, 4, '#ff00ff', 'normal')); }
+            if (pId === 3 && frame % 75 === 0) { for(let y=30; y<canvas.height; y+=60) bullets.push(new PremiumBullet(canvas.width+25, y, -2.4, 0, 4, '#00ffff', 'normal')); }
+            if (pId === 4 && frame % 16 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*4.3, (Math.random()-0.5)*4.3, 4, '#ffffff', 'normal')); }
         }
         else if (stage === 4) {
-            if (pId === 0 && frame % 11 === 0) { bullets.push(new PremiumBullet(player.x - 65, -20, 0, 4.0, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(player.x + 65, -20, 0, 4.0, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(-20, player.y - 65, 4.0, 0, 4.5, '#ffaa00', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y + 65, -4.0, 0, 4.5, '#ffaa00', 'normal')); }
-            if (pId === 1 && frame % 48 === 0) { for(let i=0; i<24; i++) { let a=(Math.PI*2/24)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*130, player.y+Math.sin(a)*130, -Math.cos(a)*1.6, -Math.sin(a)*1.6, 4, '#ff3300', 'normal')); } }
-            if (pId === 2 && frame % 12 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 3.5, '#fff', 'accelerate')); }
-            if (pId === 3 && frame % 30 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*3.2, Math.sin(ta)*3.2, 5, '#ff4400', 'normal')); }
-            if (pId === 4 && frame % 54 === 0) { let t=frame*0.05; for(let i=0; i<12; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*3.6, Math.cos(t+i)*3.6, 4.5, color, 'normal')); }
+            if (pId === 0 && frame % 18 === 0) { bullets.push(new PremiumBullet(player.x - 65, -20, 0, 2.4, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(player.x + 65, -20, 0, 2.4, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(-20, player.y - 65, 2.4, 0, 4.5, '#ffaa00', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y + 65, -2.4, 0, 4.5, '#ffaa00', 'normal')); }
+            if (pId === 1 && frame % 75 === 0) { for(let i=0; i<24; i++) { let a=(Math.PI*2/24)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*130, player.y+Math.sin(a)*130, -Math.cos(a)*1.0, -Math.sin(a)*1.0, 4, '#ff3300', 'normal')); } }
+            if (pId === 2 && frame % 20 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 3.5, '#fff', 'accelerate')); }
+            if (pId === 3 && frame % 48 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*2.0, Math.sin(ta)*2.0, 5, '#ff4400', 'normal')); }
+            if (pId === 4 && frame % 85 === 0) { let t=frame*0.05; for(let i=0; i<12; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*2.2, Math.cos(t+i)*2.2, 4.5, color, 'normal')); }
         }
         else if (stage === 5) {
-            if (pId === 0 && frame % 26 === 0) { let sa=Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx + Math.cos(sa)*260, cy + Math.sin(sa)*260, 0, 0, 5.5, `hsl(${(frame)%360},100%,50%)`, 'hard_blackhole')); }
-            if (pId === 1 && frame % 15 === 0) { bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 4.4, 0, 5, '#ff00bb', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, Math.random()*canvas.height, -4.4, 0, 5, '#ff00bb', 'normal')); }
-            if (pId === 3 && frame % 36 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -25, (Math.random()-0.5)*3.2, 3.2, 5, '#00ffff', 'normal')); }
-            if (pId === 3 && frame % 26 === 0) { let ra=frame*0.07; for(let i=0; i<6; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/6)*i)*1.76, Math.sin(ra+(Math.PI*2/6)*i)*1.76, 4.5, '#ffff00', 'shift_angle_run', 0.004)); }
-            if (pId === 4 && frame % 18 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 3.2, 7, '#ffffff', 'brake_aim', 4.4)); }
+            if (pId === 0 && frame % 40 === 0) { let sa=Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx + Math.cos(sa)*260, cy + Math.sin(sa)*260, 0, 0, 5.5, `hsl(${(frame)%360},100%,50%)`, 'hard_blackhole')); }
+            if (pId === 1 && frame % 24 === 0) { bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.6, 0, 5, '#ff00bb', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, Math.random()*canvas.height, -2.6, 0, 5, '#ff00bb', 'normal')); }
+            if (pId === 2 && frame % 55 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -25, (Math.random()-0.5)*2.0, 2.0, 5, '#00ffff', 'normal')); }
+            if (pId === 3 && frame % 40 === 0) { let ra=frame*0.07; for(let i=0; i<6; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/6)*i)*1.0, Math.sin(ra+(Math.PI*2/6)*i)*1.0, 4.5, '#ffff00', 'shift_angle_run', 0.002)); }
+            if (pId === 4 && frame % 28 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0, 7, '#ffffff', 'brake_aim', 2.6)); }
         }
         else if (stage === 6) {
-            if (pId === 0 && frame % 34 === 0) {
-                let targetAngle = Math.atan2(player.y - cy, player.x - cx); let slowSpd = 0.96;
+            // 하드모드 제타(6) 1번째(pId 0) 빼고 전부 리메이크
+            if (pId === 0 && frame % 55 === 0) {
+                let targetAngle = Math.atan2(player.y - cy, player.x - cx); let slowSpd = 0.55;
                 bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle)*slowSpd, Math.sin(targetAngle)*slowSpd, 6.5, '#ff1155', 'normal'));
                 bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.16)*slowSpd, Math.sin(targetAngle - 0.16)*slowSpd, 5, '#ff3366', 'normal'));
                 bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.32)*slowSpd, Math.sin(targetAngle - 0.32)*slowSpd, 5, '#ff3366', 'normal'));
                 bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.16)*slowSpd, Math.sin(targetAngle + 0.16)*slowSpd, 5, '#ff3366', 'normal'));
                 bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.32)*slowSpd, Math.sin(targetAngle + 0.32)*slowSpd, 5, '#ff3366', 'normal'));
             }
-            if (pId === 1 && frame % 66 === 0) { for(let i=0; i<14; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/14)*i)*200, cy + Math.sin((Math.PI*2/14)*i)*200, 0, 0, 6, '#ff00ff', 'prime_return_ring')); }
-            if (pId === 2 && frame % 24 === 0) { bullets.push(new PremiumBullet(-20, player.y, 3.2, 0, 5, '#ffaa00', 'zet_fold_90')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.2, 0, 5, '#ffaa00', 'zet_fold_90')); }
-            if (pId === 3 && frame % 42 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, player.y - 80, 0, 2.8, 5, '#ffffff', 'normal')); bullets.push(new PremiumBullet(Math.random()*canvas.width, player.y + 80, 0, -2.8, 5, '#ffffff', 'normal')); }
-            if (pId === 4 && frame % 48 === 0) { bullets.push(new PremiumBullet(player.x, -25, 0, 0.8, 6, '#ff3366', 'brake_aim', 3.6)); }
+            // 리메이크: 제타 하드 2~5번째 패턴
+            if (pId === 1 && frame % 35 === 0) { let rx = Math.random()>0.5?0:canvas.width; let ry = Math.random()>0.5?0:canvas.height; let dx = player.x-rx, dy = player.y-ry, d = Math.hypot(dx,dy); bullets.push(new PremiumBullet(rx, ry, (dx/d)*3.5, (dy/d)*3.5, 6, '#ff00ff', 'hard_bend_two', 2.0)); }
+            if (pId === 2 && frame % 45 === 0) { for(let i=0; i<4; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 1.5, 7, '#ffaa00', 'void_cross_boom')); } }
+            if (pId === 3 && frame % 60 === 0) { let t=frame*0.1; for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(t+(Math.PI/4)*i)*2, Math.sin(t+(Math.PI/4)*i)*2, 5, '#ffffff', 'ring_collapse', cx, cy)); }
+            if (pId === 4 && frame % 50 === 0) { let a = Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*4, Math.sin(a)*4, 8, '#ff3366', 'hard_vortex_sink', cx, cy)); }
         }
         else if (stage === 7) {
-            if (pId === 0 && frame % 15 === 0) { let rotAngle = frame * 0.11; for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(rotAngle + (Math.PI/4)*i)*3.04, Math.sin(rotAngle + (Math.PI/4)*i)*3.04, 4.5, '#00ffff', 'normal')); }
-            if (pId === 7 && frame % 9 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 4.16, 5.5, 'rgba(0,255,255,0.3)', 'normal'));
-            if (pId === 2 && frame % 26 === 0) { for(let i=0; i<6; i++) { let a=(Math.PI*2/6)*i; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.6, Math.sin(a)*1.6, 5, '#ff0055', 'lim_stop_go')); } }
-            if (pId === 3 && frame % 17 === 0) { bullets.push(new PremiumBullet(8, Math.random()*canvas.height, 3.6, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width-8, Math.random()*canvas.height, -3.6, 0, 5, color, 'normal')); }
-            if (pId === 4 && frame % 8 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*9.6, (Math.random()-0.5)*9.6, Math.random()*6+2, `hsl(${Math.random()*360},100%,50%)`, 'normal')); }
+            if (pId === 0 && frame % 24 === 0) { let rotAngle = frame * 0.11; for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(rotAngle + (Math.PI/4)*i)*1.8, Math.sin(rotAngle + (Math.PI/4)*i)*1.8, 4.5, '#00ffff', 'normal')); }
+            if (pId === 1 && frame % 15 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 2.5, 5.5, 'rgba(0,255,255,0.3)', 'normal'));
+            if (pId === 2 && frame % 40 === 0) { for(let i=0; i<6; i++) { let a=(Math.PI*2/6)*i; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.0, Math.sin(a)*1.0, 5, '#ff0055', 'lim_stop_go')); } }
+            if (pId === 3 && frame % 26 === 0) { bullets.push(new PremiumBullet(8, Math.random()*canvas.height, 2.2, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width-8, Math.random()*canvas.height, -2.2, 0, 5, color, 'normal')); }
+            if (pId === 4 && frame % 13 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*5.8, (Math.random()-0.5)*5.8, Math.random()*6+2, `hsl(${Math.random()*360},100%,50%)`, 'normal')); }
         }
     }
 }
@@ -781,7 +814,12 @@ function spawnLayerPattern(stage, pId) {
 function processEliteStackEngine() {
     frame++; const elapsed = (Date.now() - startTime) / 1000;
 
-    if (isInfinityMode) {
+    if (isTestMode) {
+        document.getElementById('cur-pattern-info').innerText = `TESTING | STAGE: ${testStageParam} | PAT: ${testPatternParam} | TIME: ${elapsed.toFixed(2)}s`;
+        document.getElementById('timer-bar').style.width = "100%";
+        document.getElementById('timer-bar').style.backgroundColor = "#00ffff";
+        spawnLayerPattern(testStageParam, testPatternParam);
+    } else if (isInfinityMode) {
         stackCount = Math.min(5, Math.floor(elapsed / 10) + 1); 
         while(infinityPatternPool.length < stackCount) addRandomPatternToPool();
         
@@ -816,6 +854,8 @@ function processEliteStackEngine() {
 }
 
 function savePermanentScore(finalTime, currentDodgeHits) {
+    if(isTestMode) return;
+    
     let baseKey = isInfinityMode ? 'inf' : `stage_${stageIdx}`;
     let subKey = isHardMode ? 'hard' : 'normal';
     
@@ -876,7 +916,12 @@ function animate() {
     }
     ctx.globalAlpha = 1.0;
 
-    // 자연스럽고 부드러운 곡선(Bezier) 분신 보간법 처리
+    // 무적 효과 깜빡임
+    if(pInvincibility > 0) {
+        pInvincibility--;
+        if(Math.floor(pInvincibility / 5) % 2 === 0) ctx.globalAlpha = 0.3;
+    }
+
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     for(let i = 1; i < playerHistory.length - 1; i++) {
         let ratio = i / playerHistory.length;
@@ -884,21 +929,14 @@ function animate() {
         ctx.lineWidth = (isHardMode ? 7 : 11) * ratio; 
         
         ctx.beginPath();
-        let p0 = playerHistory[i-1];
-        let p1 = playerHistory[i];
-        let p2 = playerHistory[i+1];
-        
-        let xc1 = (p0.x + p1.x) / 2;
-        let yc1 = (p0.y + p1.y) / 2;
-        let xc2 = (p1.x + p2.x) / 2;
-        let yc2 = (p1.y + p2.y) / 2;
+        let p0 = playerHistory[i-1]; let p1 = playerHistory[i]; let p2 = playerHistory[i+1];
+        let xc1 = (p0.x + p1.x) / 2; let yc1 = (p0.y + p1.y) / 2; let xc2 = (p1.x + p2.x) / 2; let yc2 = (p1.y + p2.y) / 2;
 
         if (i === 1) { ctx.moveTo(p0.x, p0.y); ctx.quadraticCurveTo(p1.x, p1.y, xc2, yc2); } 
         else { ctx.moveTo(xc1, yc1); ctx.quadraticCurveTo(p1.x, p1.y, xc2, yc2); }
         ctx.stroke();
     }
     
-    // 마지막 꼬리 연결점 곡선 마무리
     let last = playerHistory.length - 1;
     if (last > 1) {
         let ratio = last / playerHistory.length;
@@ -906,9 +944,7 @@ function animate() {
         ctx.lineWidth = (isHardMode ? 7 : 11) * ratio;
         ctx.beginPath();
         let pPrev = playerHistory[last-1]; let pLast = playerHistory[last];
-        ctx.moveTo((pPrev.x + pLast.x) / 2, (pPrev.y + pLast.y) / 2);
-        ctx.lineTo(pLast.x, pLast.y);
-        ctx.stroke();
+        ctx.moveTo((pPrev.x + pLast.x) / 2, (pPrev.y + pLast.y) / 2); ctx.lineTo(pLast.x, pLast.y); ctx.stroke();
     }
 
     for (let i = bullets.length - 1; i >= 0; i--) {
@@ -917,19 +953,29 @@ function animate() {
         if (dist < player.r + b.r * 0.42) {
             triggerGlassShatter(b.x, b.y, b.color);
             
-            if(isDodgeMode) {
-                dodgeHitCount++; document.getElementById('dodge-hit-counter').innerText = `🎯 DODGE HIT: ${dodgeHitCount}`;
+            if(isDodgeMode || isTestMode) {
+                dodgeHitCount++; 
+                document.getElementById('dodge-hit-counter').innerText = `🎯 DODGE HIT: ${dodgeHitCount}`;
                 bullets.splice(i, 1); continue;
             } else {
-                isRunning = false; ctx.globalCompositeOperation = 'source-over';
-                let finalScore = ((Date.now() - startTime) / 1000);
-                savePermanentScore(finalScore, dodgeHitCount);
-                document.getElementById('dodge-exit-btn').style.display = 'none';
+                if(pInvincibility <= 0) {
+                    playerLife--;
+                    updateLifeUI();
+                    if(playerLife <= 0) {
+                        isRunning = false; ctx.globalCompositeOperation = 'source-over';
+                        let finalScore = ((Date.now() - startTime) / 1000);
+                        savePermanentScore(finalScore, dodgeHitCount);
+                        document.getElementById('dodge-exit-btn').style.display = 'none';
 
-                let modeTitle = isHardMode ? "💀 HARD SYSTEM CRASH" : "SYSTEM CRASH";
-                document.getElementById('game-over-title').innerText = modeTitle;
-                document.getElementById('survival-result').innerText = LANG_PACK[gameLang].survivalPrefix + finalScore.toFixed(2) + LANG_PACK[gameLang].survivalSuffix;
-                document.getElementById('game-over').style.display = 'block'; return;
+                        let modeTitle = isHardMode ? "💀 HARD SYSTEM CRASH" : "SYSTEM CRASH";
+                        document.getElementById('game-over-title').innerText = modeTitle;
+                        document.getElementById('survival-result').innerText = LANG_PACK[gameLang].survivalPrefix + finalScore.toFixed(2) + LANG_PACK[gameLang].survivalSuffix;
+                        document.getElementById('game-over').style.display = 'block'; return;
+                    } else {
+                        pInvincibility = 90; // 피격 시 1.5초 무적
+                    }
+                }
+                bullets.splice(i, 1); continue;
             }
         }
         if (b.x < -60 || b.x > canvas.width + 60 || b.y < -60 || b.y > canvas.height + 60 || b.life > 1100) { bullets.splice(i, 1); }
@@ -937,9 +983,11 @@ function animate() {
 
     ctx.fillStyle = isHardMode ? '#ff1144' : '#00ffff'; ctx.beginPath(); ctx.arc(player.x, player.y, player.r + 2, 0, Math.PI * 2); ctx.fill();
     ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(player.x, player.y, player.r - 0.5, 0, Math.PI * 2); ctx.fill();
-
+    
+    ctx.globalAlpha = 1.0;
     requestAnimationFrame(animate);
 }
 </script>
 </body>
 </html>
+
