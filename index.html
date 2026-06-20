@@ -1,339 +1,875 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Custom Infectious Smile</title>
+    <title>TRANSCENDENTAL: COMPLETE 40 PATTERNS FULL RESTORE</title>
     <style>
-        body { margin: 0; overflow: hidden; background: #000; touch-action: none; font-family: sans-serif; }
-        /* 조이스틱 UI */
-        #ui-left { position: absolute; bottom: 50px; left: 30px; width: 120px; height: 120px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; z-index: 10; }
-        #joystick-stick { width: 50px; height: 50px; background: #fff; border-radius: 50%; }
-        /* 크로스헤어 */
-        #crosshair { position: absolute; top: 50%; left: 50%; width: 10px; height: 10px; border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); z-index: 5; pointer-events: none; }
-        /* 상태 표시 UI */
-        #info { position: absolute; top: 20px; left: 20px; background: rgba(0,0,0,0.7); color: white; padding: 10px; border-radius: 5px; z-index: 10; font-size: 14px; pointer-events: none; }
-        #danger-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 10px solid red; box-sizing: border-box; z-index: 20; pointer-events: none; display: none; }
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap');
+        body { 
+            margin: 0; overflow: hidden; background: #000002; 
+            font-family: 'Orbitron', sans-serif; color: #fff; 
+            touch-action: none; -webkit-user-select: none; user-select: none;
+        }
+        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
+        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        
+        #overlay { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            pointer-events: all; text-align: center; background: rgba(3, 2, 8, 0.97); 
+            padding: 22px 18px; border: 2px solid rgba(0,255,255,0.2); 
+            box-shadow: 0 0 50px rgba(0,255,255,0.12); width: 90%; max-width: 440px; border-radius: 20px;
+            display: none;
+        }
+        
+        .tab-container { display: flex; gap: 5px; margin: 12px 0; background: rgba(255,255,255,0.03); padding: 4px; border-radius: 8px; }
+        .tab-btn {
+            flex: 1; background: transparent; border: none; color: #94a3b8; font-family: 'Orbitron';
+            padding: 8px 0; font-size: 0.78rem; font-weight: 700; cursor: pointer; border-radius: 6px; transition: all 0.2s;
+        }
+        .tab-btn.active { background: rgba(0,255,255,0.15); color: #00ffff; box-shadow: inset 0 0 8px rgba(0,255,255,0.2); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        .stage-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+        .stage-btn { 
+            background: linear-gradient(135deg, rgba(12,18,35,0.95), rgba(3,3,15,0.95)); 
+            border: 1px solid #1e325c; color: #e2e8f0; padding: 10px 4px; cursor: pointer; 
+            transition: all 0.15s ease; font-family: 'Orbitron'; font-size: 0.72rem; border-radius: 8px; font-weight: 700;
+        }
+        .stage-btn:active { background: #00ffff; color: #000; border-color: #fff; transform: scale(0.96); }
+        .infinity-btn {
+            grid-column: span 2; background: linear-gradient(135deg, #440066, #110025);
+            border: 1px solid #cc00ff; color: #ffaaff; font-weight: 900;
+        }
+        
+        .record-panel {
+            background: rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.06);
+            padding: 12px; border-radius: 10px; text-align: left; max-height: 240px; overflow-y: auto;
+        }
+        .record-item { display: flex; flex-direction: column; font-size: 0.72rem; padding: 6px 4px; border-bottom: 1px solid rgba(255,255,255,0.04); gap: 2px;}
+        .record-row-line { display: flex; justify-content: space-between; }
+        
+        .mode-panel {
+            background: rgba(255,255,255,0.02); padding: 8px; border-radius: 10px; 
+            border: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; display: flex; flex-direction: column; gap: 6px;
+        }
+        .mode-container { display: flex; align-items: center; justify-content: space-between; padding: 2px 4px; }
+        .toggle-label { font-size: 0.75rem; font-weight: 700; }
+        .switch { position: relative; display: inline-block; width: 40px; height: 20px; pointer-events: all; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #27272a; transition: .2s; border-radius: 20px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .2s; border-radius: 50%; }
+        #dodge-mode-toggle:checked + .slider { background-color: #00ffcc; }
+        #hard-mode-toggle:checked + .slider { background-color: #ff2244; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        #hud { position: absolute; top: 20px; left: 20px; text-shadow: 0 0 8px #000; }
+        #timer-bar-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: rgba(255,255,255,0.05); }
+        #timer-bar { height: 100%; background: #fff; width: 100%; }
+        
+        .modal-window { 
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            display: none; pointer-events: all; text-align: center; background: rgba(4,2,12,0.98);
+            padding: 30px 20px; border: 2px solid #ff3366; box-shadow: 0 0 35px rgba(255,51,102,0.25);
+            border-radius: 16px; width: 84%; max-width: 360px;
+        }
+        h1 { font-weight: 900; letter-spacing: 3px; margin: 0; font-size: 1.5rem; }
+
+        #init-lang-popup {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            pointer-events: all; text-align: center; background: rgba(4, 2, 12, 0.99);
+            padding: 35px 25px; border: 2px solid #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.3);
+            border-radius: 16px; width: 80%; max-width: 320px; z-index: 100;
+        }
+        #init-story-popup {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            pointer-events: all; text-align: center; background: rgba(4, 2, 12, 0.99);
+            padding: 35px 25px; border: 2px solid #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.3);
+            border-radius: 16px; width: 84%; max-width: 380px; z-index: 99; display: none;
+        }
+        .lang-select-btn {
+            background: #111827; border: 1px solid #00ffff; color: #fff; padding: 12px 0;
+            width: 100%; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 700;
+            margin: 6px 0; cursor: pointer; border-radius: 8px; transition: all 0.2s;
+        }
+        .lang-select-btn:active { background: #00ffff; color: #000; }
+
+        #dodge-exit-btn {
+            position: absolute; top: 6px; left: 6px; pointer-events: all;
+            background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.3); font-size: 9px; font-family: 'Orbitron', sans-serif;
+            padding: 2px 5px; border-radius: 4px; cursor: pointer; display: none; z-index: 10;
+            transition: all 0.2s;
+        }
+        #dodge-exit-btn:hover { background: rgba(255, 255, 255, 0.15); color: rgba(255, 255, 255, 0.8); }
     </style>
 </head>
 <body>
 
-<div id="info">상태: Human (미로를 탈출하세요)</div>
-<div id="danger-overlay"></div>
-<div id="crosshair"></div>
-<div id="ui-left"><div id="joystick-stick"></div></div>
+    <canvas id="canvas"></canvas>
 
-<script type="importmap">
-{
-    "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    <div id="ui-layer">
+        <button id="dodge-exit-btn" onclick="forceExitDodge()">X EXIT</button>
+
+        <div id="init-lang-popup">
+            <h2 style="font-size:1.1rem; margin-top:0; letter-spacing:1px; color:#00ffff;">SELECT LANGUAGE</h2>
+            <button class="lang-select-btn" onclick="selectInitialLanguage('ko')">한국어 (KO)</button>
+            <button class="lang-select-btn" onclick="selectInitialLanguage('en')">ENGLISH (EN)</button>
+        </div>
+
+        <div id="init-story-popup">
+            <h1 id="story-title" style="background: linear-gradient(45deg, #00ffff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h1>
+            <p id="story-desc" style="font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; margin: 20px 0; text-align: left; word-break: keep-all;"></p>
+            <button class="stage-btn" id="story-confirm-btn" style="border-color: #00ffff; width: 140px;" onclick="closeStoryAndShowMain()"></button>
+        </div>
+
+        <div id="hud">
+            <div id="cur-stage-name" style="font-size: 1.15rem; font-weight: 900; letter-spacing: 1px;">SELECT DIMENSION</div>
+            <div id="cur-pattern-info" style="color: #00ffff; font-size: 0.78rem; margin-top: 3px; font-weight: 700;">STANDBY</div>
+            <div id="dodge-hit-counter" style="color: #00ffcc; font-size: 0.85rem; margin-top: 3px; font-weight: 900; display: none;">🎯 DODGE HIT: 0</div>
+        </div>
+        <div id="timer-bar-bg"><div id="timer-bar"></div></div>
+
+        <div id="overlay">
+            <h1 style="background: linear-gradient(45deg, #00ffff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">TRANSCENDENTAL</h1>
+            <p id="main-subtitle" style="font-size: 0.62rem; color: #64748b; margin: 2px 0 8px 0; font-weight: 700;"></p>
+            
+            <div class="tab-container">
+                <button class="tab-btn active" id="tab-play-btn" onclick="switchTab('play')"></button>
+                <button class="tab-btn" id="tab-record-btn" onclick="switchTab('record'); renderRecordBoard();"></button>
+            </div>
+
+            <div id="tab-play" class="tab-content active">
+                <div class="mode-panel">
+                    <div class="mode-container">
+                        <span class="toggle-label" id="label-dodge-mode" style="color: #00ffcc;"></span>
+                        <label class="switch"><input type="checkbox" id="dodge-mode-toggle"><span class="slider"></span></label>
+                    </div>
+                    <div class="mode-container">
+                        <span class="toggle-label" id="label-hard-mode" style="color: #ff3355;"></span>
+                        <label class="switch"><input type="checkbox" id="hard-mode-toggle"><span class="slider"></span></label>
+                    </div>
+                </div>
+
+                <div class="stage-grid">
+                    <button class="stage-btn" onclick="startGame(0, false)" style="border-color:#555;">0<br><span style="font-size:0.58rem;color:#aaa;">VOID</span></button>
+                    <button class="stage-btn" onclick="startGame(1, false)" style="border-color:#00ffcc;">1<br><span style="font-size:0.58rem;color:#00ffcc;">PRIME</span></button>
+                    <button class="stage-btn" onclick="startGame(2, false)" style="border-color:#ffff00;">10<br><span style="font-size:0.58rem;color:#ffff00;">ORDER</span></button>
+                    <button class="stage-btn" onclick="startGame(3, false)" style="border-color:#ffaa00;">100<br><span style="font-size:0.58rem;color:#ffaa00;">CENTUM</span></button>
+                    <button class="stage-btn" onclick="startGame(4, false)" style="border-color:#ff5500;">10000<br><span style="font-size:0.58rem;color:#ff5500;">MYRIAD</span></button>
+                    <button class="stage-btn" onclick="startGame(5, false)" style="border-color:#ff00ff;">10^10<br><span style="font-size:0.58rem;color:#ff00ff;">GALAXY</span></button>
+                    <button class="stage-btn" onclick="startGame(6, false)" style="border-color:#ff3366;">1e21<br><span style="font-size:0.58rem;color:#ff3366;">ZETTA</span></button>
+                    <button class="stage-btn" onclick="startGame(7, false)" style="border-color:#00ffff;">1e308<br><span style="font-size:0.0ffff;">LIMIT</span></button>
+                    <button class="stage-btn infinity-btn" id="btn-infinity-mode" onclick="startGame(-1, true)"></button>
+                </div>
+            </div>
+
+            <div id="tab-record" class="tab-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div style="font-size:0.8rem; font-weight:900; color:#ffaa00;" id="label-sector-board"></div>
+                    <button class="stage-btn" style="padding:2px 8px; font-size:0.6rem; border-color:#ff3333;" id="btn-wipe-data" onclick="clearAllData()"></button>
+                </div>
+                <div class="record-panel" id="record-board-target"></div>
+            </div>
+        </div>
+
+        <div id="continue-confirm" class="modal-window">
+            <h1 style="color: #00ffff;" id="popup-clear-title">STAGE CLEAR</h1>
+            <p id="clear-popup-desc" style="font-size: 0.85rem; color: #ccc; margin: 12px 0;"></p>
+            <div style="display: flex; gap: 8px; justify-content: center;">
+                <button class="stage-btn" style="border-color: #00ffcc; width: 100px;" id="btn-clear-continue" onclick="continueEndless()"></button>
+                <button class="stage-btn" style="border-color: #ff3366; width: 100px;" id="btn-clear-menu" onclick="showMain()"></button>
+            </div>
+        </div>
+
+        <div id="game-over" class="modal-window">
+            <h1 id="game-over-title" style="color: #ff3366;">SYSTEM CRASH</h1>
+            <p id="survival-result" style="font-size: 0.9rem; color: #cbd5e1; margin-top: 8px; font-weight: 700; line-height: 1.4; white-space: pre-line;"></p>
+            <button class="stage-btn" style="margin-top: 15px; width: 140px; border-color: #00ffff;" id="btn-over-menu" onclick="showMain()"></button>
+        </div>
+    </div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+let gameLang = 'ko';
+
+const LANG_PACK = {
+    ko: {
+        storyTitle: "SYSTEM INITIALIZE",
+        storyDesc: "차원 균열 프로토콜이 활성화되었습니다. 당신은 연산 구조 붕괴로 인해 무한히 사방에서 쏟아지는 수치 그리드 데이터를 회피하고 코어를 보존해야 합니다. 8개의 차원 영역에 걸쳐 다중 중첩되는 시스템 간섭 속에서 한계 데이터 버퍼를 견뎌내십시오.",
+        storyConfirm: "접속 개시",
+        mainSubtitle: "8개 차원 총 40개 고유 스택 패턴 시스템 완전 복구 완료",
+        playTab: "🎮 PLAY GAME",
+        recordTab: "🏆 RECORDS",
+        dodgeLabel: "🎯 DODGE MODE (피격 영구 기록 반영)",
+        hardLabel: "💀 HARD MODE (창의적 40개 개조 시퀀스)",
+        infBtn: "🚀 INFINITY MODE<br><span style='font-size:0.6rem;color:#ffccff;'>40 PATTERNS FULL RANDOM CHAOS STACK</span>",
+        sectorBoard: "PERMANENT SECTOR BOARD",
+        wipeBtn: "파쇄",
+        standby: "대기 모드",
+        wipeConfirm: "모든 타임 어택 및 돋지 모드 기록을 완전 파쇄하시겠습니까?",
+        clearDescNormal: "60초 클리어 완수! 데이터 칩셋 각인 완료",
+        clearDescDodge: "🎯 돋지 모드 완주 성공! 최종 피격 수: [ {hits}회 ]",
+        continueBtn: "계속하기",
+        menuBtn: "메뉴로",
+        survivalPrefix: "생존 시간: ",
+        survivalSuffix: "초 기록\n\n(RECORDS 탭에서 최적 피격 스코어 영구 확인 가능!)"
+    },
+    en: {
+        storyTitle: "SYSTEM INITIALIZE",
+        storyDesc: "Dimensional rift protocols have been initialized. You must evade the numeric grid data cascading infinitely from all directions due to computational layer collapse. Preserve your core and withstand the multi-stacked system interference across 8 dimensional sectors.",
+        storyConfirm: "INITIALIZE ACCESS",
+        mainSubtitle: "8 Dimensions Total 40 Unique Stack Pattern System Fully Restored",
+        playTab: "🎮 PLAY GAME",
+        recordTab: "🏆 RECORDS",
+        dodgeLabel: "🎯 DODGE MODE (PERMANENT HIT REGISTERED)",
+        hardLabel: "💀 HARD MODE (CREATIVE 40 MODIFIED SEQUENCE)",
+        infBtn: "🚀 INFINITY MODE<br><span style='font-size:0.6rem;color:#ffccff;'>40 PATTERNS FULL RANDOM CHAOS STACK</span>",
+        sectorBoard: "PERMANENT SECTOR BOARD",
+        wipeBtn: "WIPE",
+        standby: "STANDBY",
+        wipeConfirm: "Do you want to completely wipe all time attack and dodge mode records?",
+        clearDescNormal: "60s Clear Completed! Data Chipset Engraving Finished",
+        clearDescDodge: "🎯 Dodge Mode Completed! Final Hits: [ {hits} HITS ]",
+        continueBtn: "CONTINUE",
+        menuBtn: "MAIN MENU",
+        survivalPrefix: "Survival Time: ",
+        survivalSuffix: "s Recorded\n\n(Check your optimal hit score permanently in RECORDS tab!)"
     }
-}
-</script>
+};
 
-<script type="module">
-import * as THREE from 'three';
-
-// --- 1. 기본 설정 및 라이팅 ---
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x0a0a0a);
-scene.fog = new THREE.Fog(0x0a0a0a, 0, 40); // 음산한 안개
-
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-const renderer = new THREE.WebGLRenderer({ antialias: true });
-renderer.setSize(window.innerWidth, window.innerHeight);
-document.body.appendChild(renderer.domElement);
-
-const ambientLight = new THREE.AmbientLight(0x404040); // 기본 주변광
-scene.add(ambientLight);
-
-const light = new THREE.PointLight(0xffffff, 300, 30); // 1인칭 후레쉬
-camera.add(light);
-scene.add(camera);
-
-// --- 2. 상태 관리 ---
-let playerStatus = 'human'; // 'human' or 'smiler'
-let isDead = false;
-
-// --- 3. 맵 생성 (대형 미로) ---
-const UNIT_SIZE = 4;
-const mazeGrid = [
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-    [1,2,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1], // 2는 스폰 구역
-    [1,2,2,0,1,0,1,0,1,1,1,1,1,1,1,0,0,1],
-    [1,0,0,0,1,0,0,0,1,0,0,0,0,0,1,0,0,1],
-    [1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,0,1],
-    [1,0,1,3,0,0,0,0,0,0,1,3,1,0,0,0,0,1], // 3은 하얀 액체
-    [1,0,1,0,1,1,1,1,1,1,1,0,1,1,1,1,1,1],
-    [1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1],
-    [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+const STAGES = [
+    { name: "0 : VOID (공허)", color: "#8c8c8c" },
+    { name: "1 : PRIME (기원)", color: "#00ffcc" },
+    { name: "10 : ORDER (대칭)", color: "#ffff00" },
+    { name: "100 : CENTUM (매트릭스)", color: "#ffaa00" },
+    { name: "10000 : MYRIAD (구체)", color: "#ff5500" },
+    { name: "10^10 : GALAXY (은하)", color: "#ff00ff" },
+    { name: "1e21 : ZETTA (장막)", color: "#ff3366" },
+    { name: "1e308 : LIMIT (종말)", color: "#00ffff" }
 ];
 
-const walls = [];
-const safeZone = new THREE.Group();
-const liquidPuddles = [];
+let player = { x: 0, y: 0, r: 5 };
+let playerHistory = []; 
+let bullets = [];
+let glassShards = []; 
+let cosmicDust = [];  
 
-mazeGrid.forEach((row, r) => {
-    row.forEach((type, c) => {
-        const x = c * UNIT_SIZE;
-        const z = r * UNIT_SIZE;
+let stageIdx = 0;
+let stackCount = 1; 
+let startTime = 0;
+let isRunning = false;
+let isPausedForChoice = false;
+let isInfinityMode = false;
+let hasPrompted60s = false;
+let frame = 0;
+let lastTouch = { x: 0, y: 0 };
+let infinityPatternPool = [];
 
-        if (type === 1) { // 벽
-            const geo = new THREE.BoxGeometry(UNIT_SIZE, 3, UNIT_SIZE);
-            const mat = new THREE.MeshStandardMaterial({ color: 0x333333, metalness: 0.1 });
-            const wall = new THREE.Mesh(geo, mat);
-            wall.position.set(x, 1.5, z);
-            scene.add(wall);
-            walls.push(wall);
-        } else {
-            // 바닥 (기본)
-            const floorGeo = new THREE.PlaneGeometry(UNIT_SIZE, UNIT_SIZE);
-            let floorMat = new THREE.MeshStandardMaterial({ color: 0x111111 });
-            
-            if (type === 2) { // 스폰 구역 (주황색)
-                floorMat = new THREE.MeshStandardMaterial({ color: 0xffa500 });
-                // 스폰 지역 충돌 박스
-                const safeBoxGeo = new THREE.BoxGeometry(UNIT_SIZE, 0.5, UNIT_SIZE);
-                const safeBoxMat = new THREE.MeshBasicMaterial({visible: false});
-                const safeBox = new THREE.Mesh(safeBoxGeo, safeBoxMat);
-                safeBox.position.set(x, 0, z);
-                safeZone.add(safeBox);
-            } else if (type === 3) { // 하얀 액체 (네온 하양)
-                floorMat = new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 2 });
-                // 액체 충돌 박스
-                const puddleGeo = new THREE.BoxGeometry(UNIT_SIZE * 0.8, 0.1, UNIT_SIZE * 0.8);
-                const puddleMat = new THREE.MeshBasicMaterial({visible: false});
-                const puddle = new THREE.Mesh(puddleGeo, puddleMat);
-                puddle.position.set(x, 0.05, z);
-                liquidPuddles.push(puddle);
-            }
+let isDodgeMode = false;
+let isHardMode = false;
+let dodgeHitCount = 0;
 
-            const floor = new THREE.Mesh(floorGeo, floorMat);
-            floor.rotation.x = -Math.PI / 2;
-            floor.position.set(x, 0, z);
-            scene.add(floor);
-        }
+let gameRecords = JSON.parse(localStorage.getItem('trans_records_v4_2026')) || {};
+
+function selectInitialLanguage(lang) {
+    gameLang = lang;
+    document.getElementById('init-lang-popup').style.display = 'none';
+    
+    document.getElementById('story-title').innerText = LANG_PACK[gameLang].storyTitle;
+    document.getElementById('story-desc').innerText = LANG_PACK[gameLang].storyDesc;
+    document.getElementById('story-confirm-btn').innerText = LANG_PACK[gameLang].storyConfirm;
+    
+    document.getElementById('init-story-popup').style.display = 'block';
+}
+
+function closeStoryAndShowMain() {
+    document.getElementById('init-story-popup').style.display = 'none';
+    applyLanguageToUI();
+    document.getElementById('overlay').style.display = 'block';
+}
+
+function applyLanguageToUI() {
+    const p = LANG_PACK[gameLang];
+    document.getElementById('main-subtitle').innerText = p.mainSubtitle;
+    document.getElementById('tab-play-btn').innerText = p.playTab;
+    document.getElementById('tab-record-btn').innerText = p.recordTab;
+    document.getElementById('label-dodge-mode').innerText = p.dodgeLabel;
+    document.getElementById('label-hard-mode').innerText = p.hardLabel;
+    document.getElementById('btn-infinity-mode').innerHTML = p.infBtn;
+    document.getElementById('label-sector-board').innerText = p.sectorBoard;
+    document.getElementById('btn-wipe-data').innerText = p.wipeBtn;
+    document.getElementById('cur-pattern-info').innerText = p.standby;
+    document.getElementById('btn-clear-continue').innerText = p.continueBtn;
+    document.getElementById('btn-clear-menu').innerText = p.menuBtn;
+    document.getElementById('btn-over-menu').innerText = p.menuBtn;
+}
+
+function switchTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    if(tab === 'play') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('tab-play').classList.add('active');
+    } else {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('tab-record').classList.add('active');
+    }
+}
+
+function renderRecordBoard() {
+    const target = document.getElementById('record-board-target');
+    target.innerHTML = '';
+    
+    STAGES.forEach((st, idx) => {
+        let nTimeKey = `stage_${idx}_normal_time`;
+        let hTimeKey = `stage_${idx}_hard_time`;
+        let nDodgeKey = `stage_${idx}_normal_dodge`;
+        let hDodgeKey = `stage_${idx}_hard_dodge`;
+        
+        let nt = gameRecords[nTimeKey] ? gameRecords[nTimeKey].toFixed(2) + 's' : '---';
+        let ht = gameRecords[hTimeKey] ? gameRecords[hTimeKey].toFixed(2) + 's' : '---';
+        let nd = gameRecords[nDodgeKey] !== undefined ? gameRecords[nDodgeKey] + ' HITS' : '---';
+        let hd = gameRecords[hDodgeKey] !== undefined ? gameRecords[hDodgeKey] + ' HITS' : '---';
+        
+        let row = document.createElement('div');
+        row.className = 'record-item';
+        row.innerHTML = `
+            <div class="record-row-line" style="color:${st.color}; font-weight:700;">
+                <span>${st.name.split(' ')[0]} ${st.name.split(' ')[2]}</span>
+            </div>
+            <div class="record-row-line" style="color:#aaa; font-size:0.68rem; margin-left:4px;">
+                <span>NOR TIME: <b style="color:#fff;">${nt}</b> (🎯 DG: <b style="color:#00ffcc;">${nd}</b>)</span>
+                <span>HARD TIME: <b style="color:#ff3355;">${ht}</b> (🎯 DG: <b style="color:#ffaa00;">${hd}</b>)</span>
+            </div>
+        `;
+        target.appendChild(row);
     });
-});
-scene.add(safeZone);
-
-// --- 4. 엔티티 생성 (Smilers, Humans) ---
-const smilers = [];
-const humans = [];
-
-function spawnEntity(type, color, array) {
-    const geo = new THREE.BoxGeometry(1, 2, 1);
-    const mat = new THREE.MeshStandardMaterial({ color: color });
-    const mesh = new THREE.Mesh(geo, mat);
     
-    // 무작위 위치 스폰 (벽 안 피하기)
-    let posR, posC;
-    do {
-        posR = Math.floor(Math.random() * mazeGrid.length);
-        posC = Math.floor(Math.random() * mazeGrid[0].length);
-    } while (mazeGrid[posR][posC] !== 0); // 빈 공간에만 스폰
-
-    mesh.position.set(posC * UNIT_SIZE, 1, posR * UNIT_SIZE);
-    scene.add(mesh);
-    array.push({ mesh, target: null, wanderDir: new THREE.Vector3(1, 0, 0) });
+    let infNt = gameRecords['inf_normal_time'] ? gameRecords['inf_normal_time'].toFixed(2) + 's' : '---';
+    let infHt = gameRecords['inf_hard_time'] ? gameRecords['inf_hard_time'].toFixed(2) + 's' : '---';
+    let infNd = gameRecords['inf_normal_dodge'] !== undefined ? gameRecords['inf_normal_dodge'] + ' HITS' : '---';
+    let infHd = gameRecords['inf_hard_dodge'] !== undefined ? gameRecords['inf_hard_dodge'] + ' HITS' : '---';
+    
+    let infRow = document.createElement('div');
+    infRow.className = 'record-item';
+    infRow.style.background = 'rgba(200,0,255,0.06)';
+    infRow.style.marginTop = '6px';
+    infRow.innerHTML = `
+        <div class="record-row-line" style="color:#cc00ff; font-weight:900;">
+            <span>🌌 INFINITY SECTOR</span>
+        </div>
+        <div class="record-row-line" style="color:#ccc; font-size:0.68rem; margin-left:4px;">
+            <span>NOR TIME: <b style="color:#fff;">${infNt}</b> (🎯 DG: <b style="color:#00ffcc;">${infNd}</b>)</span>
+            <span>HARD TIME: <b style="color:#ff2244;">${infHt}</b> (🎯 DG: <b style="color:#ffaa00;">${infHd}</b>)</span>
+        </div>
+    `;
+    target.appendChild(infRow);
 }
 
-for(let i=0; i<15; i++) spawnEntity('smiler', 0xffeb3b, smilers); // 스마일러 (노랑)
-for(let i=0; i<10; i++) spawnEntity('human', 0xffffff, humans);  // 사람 (하양)
-
-// --- 5. 플레이어 스폰 위치 ---
-camera.position.set(UNIT_SIZE, 1.6, UNIT_SIZE); // 스폰 구역 내
-
-// --- 6. 입력 처리 (조이스틱 + 오른쪽 스와이프 시점) ---
-const stick = document.getElementById('joystick-stick');
-const uiInfo = document.getElementById('info');
-const dangerOverlay = document.getElementById('danger-overlay');
-
-let moveDir = { x: 0, z: 0 };
-let joystickTouching = false;
-let rotationDeltaLon = 0; // 시점 회전값 (경도)
-
-// 화면 회전용 (오른쪽 스와이프)
-let rotationTouchStartX = 0;
-let isRotationTouching = false;
-const HALF_WIDTH = window.innerWidth / 2;
-
-// 왼쪽 조이스틱
-stick.parentElement.addEventListener('touchstart', (e) => joystickTouching = true);
-window.addEventListener('touchstart', (e) => {
-    // 터치 위치가 오른쪽이면 화면 회전 시작
-    if (e.touches[0].clientX > HALF_WIDTH) {
-        isRotationTouching = true;
-        rotationTouchStartX = e.touches[0].clientX;
+function clearAllData() {
+    if(confirm(LANG_PACK[gameLang].wipeConfirm)) {
+        gameRecords = {}; localStorage.removeItem('trans_records_v4_2026'); renderRecordBoard();
     }
-});
+}
 
-window.addEventListener('touchmove', (e) => {
-    e.preventDefault();
-    
-    for (let t of e.changedTouches) {
-        if (t.clientX < HALF_WIDTH && joystickTouching) {
-            // 조이스틱 로직
-            const container = stick.parentElement.getBoundingClientRect();
-            const centerX = container.left + container.width / 2;
-            const centerY = container.top + container.height / 2;
-            let dx = t.clientX - centerX;
-            let dy = t.clientY - centerY;
-            const dist = Math.sqrt(dx*dx + dy*dy);
-            const maxDist = 50;
-            if(dist > maxDist) { dx *= maxDist / dist; dy *= maxDist / dist; }
-            stick.style.transform = `translate(${dx}px, ${dy}px)`;
-            moveDir.x = dx / maxDist; moveDir.z = dy / maxDist;
-        } else if (t.clientX > HALF_WIDTH && isRotationTouching) {
-            // 오른쪽 스와이프 시점 회전 로직
-            const dx = t.clientX - rotationTouchStartX;
-            rotationDeltaLon = dx * 0.005; // 민감도 조절
-            rotationTouchStartX = t.clientX;
+function initCosmicDust() {
+    cosmicDust = [];
+    for(let i=0; i<25; i++) {
+        cosmicDust.push({
+            x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+            size: Math.random() * 2.2 + 0.8, speed: Math.random() * 0.4 + 0.1,
+            color: `rgba(100, 200, 255, ${Math.random()*0.2+0.15})`
+        });
+    }
+}
+
+let bgGrid = [];
+function initBackground() {
+    bgGrid = []; const cols = 12; const rows = 12; 
+    for(let i=0; i<=cols; i++) { for(let j=0; j<=rows; j++) { bgGrid.push({ origX: i / cols, origY: j / rows, x: 0, y: 0 }); } }
+    initCosmicDust();
+}
+
+function updateBackground() {
+    bgGrid.forEach(pt => {
+        let baseX = pt.origX * canvas.width; let baseY = pt.origY * canvas.height;
+        let dx = player.x - baseX; let dy = player.y - baseY; let dist = Math.hypot(dx, dy);
+        let force = Math.min(35, 2000 / (dist + 55)); pt.x = baseX - (dx / (dist + 1)) * force; pt.y = baseY - (dy / (dist + 1)) * force;
+    });
+    cosmicDust.forEach(d => { d.y += d.speed; if(d.y > canvas.height) { d.y = -10; d.x = Math.random() * canvas.width; } });
+}
+
+function drawBackground() {
+    cosmicDust.forEach(d => { ctx.fillStyle = d.color; ctx.beginPath(); ctx.arc(d.x, d.y, d.size, 0, Math.PI*2); ctx.fill(); });
+    ctx.strokeStyle = 'rgba(0, 220, 255, 0.035)'; ctx.lineWidth = 1.0; const size = Math.sqrt(bgGrid.length);
+    for(let i=0; i<size; i++) {
+        for(let j=0; j<size; j++) {
+            let idx = i * size + j;
+            if(j < size - 1) { ctx.beginPath(); ctx.moveTo(bgGrid[idx].x, bgGrid[idx].y); ctx.lineTo(bgGrid[idx+1].x, bgGrid[idx+1].y); ctx.stroke(); }
+            if(i < size - 1) { ctx.beginPath(); ctx.moveTo(bgGrid[idx].x, bgGrid[idx].y); ctx.lineTo(bgGrid[idx+size].x, bgGrid[idx+size].y); ctx.stroke(); }
         }
     }
-}, { passive: false });
-
-const endTouch = () => {
-    joystickTouching = false; isRotationTouching = false;
-    stick.style.transform = `translate(0, 0)`; moveDir = { x: 0, z: 0 };
-    rotationDeltaLon = 0;
-};
-window.addEventListener('touchend', endTouch);
-window.addEventListener('touchcancel', endTouch);
-
-// --- 7. 감지 로직 (벽 시야 체크) ---
-function isTargetVisible(attacker, target, raycaster) {
-    if(!attacker || !target) return false;
-    const attackerPos = new THREE.Vector3().setFromMatrixPosition(attacker.matrixWorld);
-    const targetPos = new THREE.Vector3().setFromMatrixPosition(target.matrixWorld);
-    const dir = new THREE.Vector3().subVectors(targetPos, attackerPos).normalize();
-    const dist = attackerPos.distanceTo(targetPos);
-    
-    raycaster.set(attackerPos, dir);
-    raycaster.far = dist; // 타겟 거리까지만 체크
-    
-    // 벽과의 충돌만 체크
-    const intersects = raycaster.intersectObjects(walls);
-    return intersects.length === 0; // 중간에 벽이 없어야 감지됨
 }
 
-const checkRaycaster = new THREE.Raycaster();
+function resize() {
+    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    if(!isRunning) { player.x = canvas.width / 2; player.y = canvas.height * 0.75; }
+    initBackground();
+}
+window.addEventListener('resize', resize);
+resize();
 
-// --- 8. 게임 루프 (AI 및 상태 처리) ---
-let cameraLon = -Math.PI / 2; // 초기 시점
+function showMain() {
+    isRunning = false; isPausedForChoice = false; isMouseDown = false;
+    document.getElementById('game-over').style.display = 'none';
+    document.getElementById('continue-confirm').style.display = 'none';
+    document.getElementById('dodge-exit-btn').style.display = 'none';
+    document.getElementById('overlay').style.display = 'block';
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+}
+
+function forceExitDodge() {
+    isRunning = false;
+    showMain();
+}
+
+function startGame(idx, infinityOption) {
+    resize();
+    stageIdx = idx; isInfinityMode = infinityOption;
+    stackCount = 1; hasPrompted60s = false; isPausedForChoice = false;
+    bullets = []; glassShards = []; infinityPatternPool = []; playerHistory = [];
+    dodgeHitCount = 0; frame = 0; startTime = Date.now();
+    
+    isDodgeMode = document.getElementById('dodge-mode-toggle').checked;
+    isHardMode = document.getElementById('hard-mode-toggle').checked;
+    
+    player.r = isHardMode ? 2.5 : 5.0;
+
+    if(isDodgeMode) {
+        document.getElementById('dodge-hit-counter').style.display = 'block';
+        document.getElementById('dodge-hit-counter').innerText = "🎯 DODGE HIT: 0";
+        document.getElementById('dodge-exit-btn').style.display = 'block';
+    } else {
+        document.getElementById('dodge-hit-counter').style.display = 'none';
+        document.getElementById('dodge-exit-btn').style.display = 'none';
+    }
+
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('game-over').style.display = 'none';
+    document.getElementById('continue-confirm').style.display = 'none';
+    
+    let modeTag = "";
+    if(isDodgeMode && isHardMode) modeTag = "🎯💀 DG+HARD ";
+    else if(isHardMode) modeTag = "💀 HARD ";
+    else if(isDodgeMode) modeTag = "🎯 DODGE ";
+
+    if(isInfinityMode) {
+        document.getElementById('cur-stage-name').innerText = modeTag + "INFINITY";
+        document.getElementById('cur-stage-name').style.color = isHardMode ? "#ff1155" : "#cc00ff";
+        addRandomPatternToPool();
+    } else {
+        document.getElementById('cur-stage-name').innerText = modeTag + STAGES[stageIdx].name.split(' ')[0] + " DIM";
+        document.getElementById('cur-stage-name').style.color = isHardMode ? "#ff3355" : STAGES[stageIdx].color;
+    }
+    
+    player.x = canvas.width / 2; player.y = canvas.height * 0.75;
+    for(let i=0; i<15; i++) playerHistory.push({x: player.x, y: player.y});
+
+    isRunning = true; animate();
+}
+
+function addRandomPatternToPool() {
+    let rStage = Math.floor(Math.random() * STAGES.length);
+    let rPid = Math.floor(Math.random() * 5);
+    infinityPatternPool.push({ stage: rStage, pId: rPid });
+}
+
+function continueEndless() {
+    document.getElementById('continue-confirm').style.display = 'none';
+    isPausedForChoice = false; startTime = Date.now() - 60000; animate();
+}
+
+function triggerGlassShatter(x, y, color) {
+    const shardCount = 6; 
+    for(let i=0; i<shardCount; i++) {
+        let angle = Math.random() * Math.PI * 2; let speed = Math.random() * 3.0 + 1.5; let points = [];
+        for(let p=0; p<3; p++) points.push({ dx: Math.cos((Math.PI * 2 / 3) * p)*(Math.random() * 6 + 3), dy: Math.sin((Math.PI * 2 / 3) * p)*(Math.random() * 6 + 3) });
+        glassShards.push({ x: x, y: y, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, rot: Math.random() * Math.PI, rotSpeed: (Math.random() - 0.5) * 0.2, points: points, color: color || '#00ffff', alpha: 1.0, decay: 0.025 });
+    }
+}
+
+class PremiumBullet {
+    constructor(x, y, vx, vy, r, color, behavior, p1 = 0, p2 = 0) {
+        this.x = x; this.y = y; this.vx = vx; this.vy = vy; this.r = r; 
+        this.color = color; this.behavior = behavior; this.p1 = p1; this.p2 = p2; this.life = 0;
+        this.bounceCount = 0;
+    }
+    update() {
+        this.life++;
+        switch(this.behavior) {
+            case 'sine_wave': this.x += Math.sin(this.life * 0.05) * this.p1; break;
+            case 'cos_wave': this.y += Math.cos(this.life * 0.05) * this.p1; break;
+            case 'accelerate': this.vx *= 1.014; this.vy *= 1.014; break;
+            
+            case 'hard_bend_two':
+                if(this.life === 24 || this.life === 52) {
+                    let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
+                    this.vx = (dx / (d + 1)) * this.p1; this.vy = (dy / (d + 1)) * this.p1;
+                }
+                break;
+            case 'void_cross_boom':
+                if(this.life === 48) {
+                    this.behavior = 'normal'; this.color = '#ff0055'; this.r = 4;
+                    let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
+                    this.vx = (dx/(d+1))*2.8; this.vy = (dy/(d+1))*2.8;
+                }
+                break;
+            case 'void_sink_black':
+                let vdx = canvas.width/2 - this.x; let vdy = canvas.height/2 - this.y; let vd = Math.hypot(vdx, vdy);
+                this.x += (vdx/(vd+1))*0.4; this.y += (vdy/(vd+1))*0.4;
+                break;
+
+            case 'hard_vortex_sink':
+                let curDist = Math.hypot(this.x - this.p1, this.y - this.p2);
+                if(curDist > 5) {
+                    let angle = Math.atan2(this.y - this.p2, this.x - this.p1) + 0.03;
+                    let nextRadius = curDist - 0.76;
+                    this.x = this.p1 + Math.cos(angle) * nextRadius;
+                    this.y = this.p2 + Math.sin(angle) * nextRadius;
+                    return; 
+                }
+                break;
+            case 'prime_blade_in':
+                let bDist = Math.hypot(this.x - this.p1, this.y - this.p2);
+                let bAngle = Math.atan2(this.y - this.p2, this.x - this.p1) - 0.04;
+                this.x = this.p1 + Math.cos(bAngle) * (bDist - 1.12);
+                this.y = this.p2 + Math.sin(bAngle) * (bDist - 1.12);
+                return;
+            case 'prime_return_ring':
+                if(this.life > 45 && this.life < 85) { this.vx *= -0.85; this.vy *= -0.85; this.behavior = 'normal'; }
+                break;
+
+            case 'hard_bounce_laser':
+                if(this.bounceCount < 2) {
+                    if(this.x < 8 || this.x > canvas.width - 8 || this.y < 8 || this.y > canvas.height - 8) {
+                        let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
+                        this.vx = (dx / (d + 1)) * 2.72; this.vy = (dy / (d + 1)) * 2.72;
+                        this.bounceCount++; this.color = '#ff00ff';
+                    }
+                }
+                break;
+            case 'order_mirror_chase':
+                if(this.life % 30 === 0) {
+                    let tx = canvas.width - player.x; let ty = canvas.height - player.y;
+                    let dx = tx - this.x; let dy = ty - this.y; let d = Math.hypot(dx, dy);
+                    this.vx = (dx/(d+1))*2.0; this.vy = (dy/(d+1))*2.0;
+                }
+                break;
+
+            case 'hard_blackhole':
+                if(this.life > 30 && this.life < 65) {
+                    let dx = canvas.width/2 - this.x; let dy = canvas.height/2 - this.y; let d = Math.hypot(dx, dy);
+                    this.x += (dx/(d+1))*3.2; this.y += (dy/(d+1))*3.2;
+                } else if(this.life === 65) {
+                    let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
+                    this.vx = (dx/(d+1))*3.36; this.vy = (dy/(d+1))*3.36;
+                }
+                break;
+
+            case 'zet_fold_90':
+                if(this.life === 40) {
+                    let temp = this.vx; this.vx = -this.vy * 1.04; this.vy = temp * 1.04;
+                }
+                break;
+
+            case 'lim_stop_go':
+                if(this.life === 30) { this.p1 = this.vx; this.p2 = this.vy; this.vx = 0; this.vy = 0; }
+                if(this.life === 60) { this.vx = this.p1 * 2.0; this.vy = this.p2 * 2.0; }
+                break;
+            case 'ring_collapse':
+                let rdx = this.x - this.p1; let rdy = this.y - this.p2; let rdist = Math.hypot(rdx, rdy);
+                if(rdist > 2) { this.x -= (rdx/rdist)*1.52; this.y -= (rdy/rdist)*1.52; }
+                break;
+            case 'shift_angle_run':
+                const rx = this.vx * Math.cos(this.p1) - this.vy * Math.sin(this.p1);
+                this.vy = this.vx * Math.sin(this.p1) + this.vy * Math.cos(this.p1); this.vx = rx;
+                break;
+        }
+        this.x += this.vx; this.y += this.vy;
+    }
+    draw() {
+        ctx.fillStyle = this.color; ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 0.5; ctx.stroke();
+    }
+}
+
+function spawnLayerPattern(stage, pId) {
+    const cx = canvas.width / 2; const cy = canvas.height / 2;
+    const color = STAGES[stage] ? STAGES[stage].color : "#fff";
+    
+    if(!isHardMode) {
+        if (stage === 0) {
+            if (pId === 0 && frame % 45 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.5, 7, '#777777', 'normal'));
+            if (pId === 1 && frame % 55 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.5, 7, '#555555', 'normal'));
+            if (pId === 2 && frame % 60 === 0) { bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 1.8, 0, 6, '#666', 'normal')); bullets.push(new PremiumBullet(canvas.width+15, Math.random()*canvas.height, -1.8, 0, 6, '#666', 'normal')); }
+            if (pId === 3 && frame % 70 === 0) bullets.push(new PremiumBullet(cx + (Math.random()-0.5)*100, cy + (Math.random()-0.5)*100, (Math.random()-0.5)*2, (Math.random()-0.5)*2, 5, '#444', 'normal'));
+            if (pId === 4 && frame % 90 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 0.8, 14, '#888', 'normal'));
+        }
+        else if (stage === 1) {
+            if (pId === 0 && frame % 20 === 0) bullets.push(new PremiumBullet(cx, cy, Math.cos(frame*0.08)*1.8, Math.sin(frame*0.08)*1.8, 5, color, 'normal'));
+            if (pId === 1 && frame % 25 === 0) bullets.push(new PremiumBullet(cx, cy, Math.cos(-frame*0.06)*2.0, Math.sin(-frame*0.06)*2.0, 4.5, '#55ffee', 'normal'));
+            if (pId === 2 && frame % 65 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.2)*2.3, Math.sin(ta+i*0.2)*2.3, 5.5, color, 'normal')); }
+            if (pId === 3 && frame % 15 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 2.2, 4, color, 'sine_wave', 2.0));
+            if (pId === 4 && frame % 80 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/8)*i)*1.5, Math.sin((Math.PI*2/8)*i)*1.5, 6, '#fff', 'normal')); }
+        }
+        else if (stage === 2) {
+            if (pId === 0 && frame % 40 === 0) { for(let i=0; i<6; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/6)*i)*1.8, Math.sin((Math.PI*2/6)*i)*1.8, 6, color, 'normal')); }
+            if (pId === 1 && frame % 50 === 0) { let rx = Math.random()*canvas.width; bullets.push(new PremiumBullet(rx, -15, 0, 2.0, 5, color, 'normal')); bullets.push(new PremiumBullet(rx, canvas.height+15, 0, -2.0, 5, color, 'normal')); }
+            if (pId === 2 && frame % 55 === 0) { let ry = Math.random()*canvas.height; bullets.push(new PremiumBullet(-15, ry, 2.0, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width+15, ry, -2.0, 0, 5, color, 'normal')); }
+            if (pId === 3 && frame % 30 === 0) { let rot = frame*0.05; for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(rot+(Math.PI/2)*i)*2.0, Math.sin(rot+(Math.PI/2)*i)*2.0, 5.5, '#ffffaa', 'normal')); }
+            if (pId === 4 && frame % 75 === 0) { for(let i=0; i<12; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/12)*i)*150, cy + Math.sin((Math.PI*2/12)*i)*150, 0, 0, 5, color, 'ring_collapse', cx, cy)); }
+        }
+        else if (stage === 3) {
+            if (pId === 0 && frame % 70 === 0) { for(let x=canvas.width/4; x<canvas.width; x+=canvas.width/2) bullets.push(new PremiumBullet(x, -20, 0, 1.5, 5, color, 'normal')); }
+            if (pId === 1 && frame % 60 === 0) { for(let x=canvas.width/6; x<canvas.width; x+=canvas.width/3) bullets.push(new PremiumBullet(x, canvas.height+20, 0, -1.5, 5, color, 'normal')); }
+            if (pId === 2 && frame % 45 === 0) bullets.push(new PremiumBullet(-20, player.y, 3.0, 0, 4.5, '#ffcc00', 'normal'));
+            if (pId === 3 && frame % 45 === 0) bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.0, 0, 4.5, '#ffcc00', 'normal'));
+            if (pId === 4 && frame % 40 === 0) bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*4, (Math.random()-0.5)*4, 5, '#fff', 'normal'));
+        }
+        else if (stage === 4) {
+            if (pId === 0 && frame % 35 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, (Math.random()-0.5)*2, 1.8, 5, color, 'normal')); }
+            if (pId === 1 && frame % 50 === 0) { for(let i=0; i<16; i++) { let a=(Math.PI*2/16)*i; bullets.push(new PremiumBullet(cx+Math.cos(a)*100, cy+Math.sin(a)*100, Math.cos(a)*1.2, Math.sin(a)*1.2, 4.5, '#ff7722', 'normal')); } }
+            if (pId === 2 && frame % 15 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, (Math.random()-0.5)*1, (Math.random()-0.5)*1, 4, color, 'normal'));
+            if (pId === 3 && frame % 40 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*3.0, Math.sin(ta)*3.0, 6, '#fff', 'normal')); }
+            if (pId === 4 && frame % 65 === 0) { let t=frame*0.02; for(let i=0; i<6; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*2, Math.cos(t+i)*2, 5, color, 'normal')); }
+        }
+        else if (stage === 5) {
+            if (pId === 0 && frame % 30 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0, 5, `hsl(${(frame)%360},100%,65%)`, 'normal'));
+            if (pId === 1 && frame % 25 === 0) { for(let i=0; i<3; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.5, 4.5, '#ff00ff', 'normal')); }
+            if (pId === 2 && frame % 80 === 0) { for(let i=0; i<10; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 5.5, '#00ffff', 'accelerate')); }
+            if (pId === 3 && frame % 40 === 0) { let ra=frame*0.04; for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI/2)*i)*1.6, Math.sin(ra+(Math.PI/2)*i)*1.6, 5, color, 'shift_angle_run', 0.002)); }
+            if (pId === 4 && frame % 50 === 0) bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.2, Math.sin(frame*0.1)*1, 5, '#fff', 'normal'));
+        }
+        else if (stage === 6) {
+            if (pId === 0 && frame % 35 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*2.5, Math.sin(ta)*2.5, 6, color, 'normal')); }
+            if (pId === 1 && frame % 75 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx+Math.cos((Math.PI*2/8)*i)*180, cy+Math.sin((Math.PI*2/8)*i)*180, 0, 0, 5, '#ffaaee', 'ring_collapse', cx, cy)); }
+            if (pId === 2 && frame % 28 === 0) { bullets.push(new PremiumBullet(-20, cy, 2.5, 0, 5.5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width+20, cy, -2.5, 0, 5.5, color, 'normal')); }
+            if (pId === 3 && frame % 45 === 0) { for(let x=40; x<canvas.width; x+=120) bullets.push(new PremiumBullet(x, -20, 0, 2.0, 5, color, 'normal')); }
+            if (pId === 4 && frame % 60 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, (Math.random()-0.5)*3, 2.0, 6, '#fff', 'brake_aim', 3.0));
+        }
+        else if (stage === 7) {
+            if (pId === 0 && frame % 18 === 0) { let ra=frame*0.08; for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI/2)*i)*2.5, Math.sin(ra+(Math.PI/2)*i)*2.5, 5, color, 'normal')); }
+            if (pId === 1 && frame % 30 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 3.5, 4.5, '#ffffff', 'normal'));
+            if (pId === 2 && frame % 50 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/8)*i)*1.2, Math.sin((Math.PI*2/8)*i)*1.2, 6, color, 'normal')); }
+            if (pId === 3 && frame % 40 === 0) { bullets.push(new PremiumBullet(-20, player.y, 4.0, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -4.0, 0, 5, color, 'normal')); }
+            if (pId === 4 && frame % 25 === 0) bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*6, (Math.random()-0.5)*6, 4, '#ff3333', 'normal'));
+        }
+    } else {
+        if (stage === 0) {
+            if (pId === 0 && frame % 35 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.6, 7.5, '#ff3355', 'hard_bend_two', 2.56));
+            if (pId === 1 && frame % 38 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.6, 7.5, '#ff3355', 'hard_bend_two', 2.56));
+            if (pId === 2 && frame % 48 === 0) { bullets.push(new PremiumBullet(-15, player.y, 0.8, 0, 6, '#ffaa00', 'void_cross_boom')); bullets.push(new PremiumBullet(canvas.width+15, player.y, -0.8, 0, 6, '#ffaa00', 'void_cross_boom')); }
+            if (pId === 3 && frame % 66 === 0) { for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx+Math.cos((Math.PI/2)*i)*150, cy+Math.sin((Math.PI/2)*i)*150, 0, 0, 6, '#333333', 'void_sink_black')); }
+            if (pId === 4 && frame % 78 === 0) { let ta=Math.atan2(player.y-(-20), player.x-cx); bullets.push(new PremiumBullet(cx, -20, Math.cos(ta)*3.6, Math.sin(ta)*3.6, 16, '#ff0000', 'normal')); }
+        }
+        else if (stage === 1) {
+            if (pId === 0 && frame % 12 === 0) bullets.push(new PremiumBullet(cx + Math.cos(frame*0.14)*260, cy + Math.sin(frame*0.14)*260, 0, 0, 5, '#00ffcc', 'hard_vortex_sink', cx, cy));
+            if (pId === 1 && frame % 17 === 0) bullets.push(new PremiumBullet(cx + Math.cos(-frame*0.1)*300, cy + Math.sin(-frame*0.1)*300, 0, 0, 5.5, '#ff00ff', 'prime_blade_in', cx, cy));
+            if (pId === 2 && frame % 54 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.15)*3.2, Math.sin(ta+i*0.15)*3.2, 5, '#ffffff', 'normal')); }
+            if (pId === 3 && frame % 12 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 2.4, 4.5, color, 'sine_wave', 3.6)); bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 2.4, 0, 4.5, color, 'cos_wave', 3.6)); }
+            if (pId === 4 && frame % 66 === 0) { for(let i=0; i<10; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/10)*i)*2.4, Math.sin((Math.PI*2/10)*i)*2.4, 6, '#ffff00', 'prime_return_ring')); }
+        }
+        else if (stage === 2) {
+            if (pId === 0 && frame % 42 === 0) { for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/5)*i+(frame*0.01))*2.0, Math.sin((Math.PI*2/5)*i+(frame*0.01))*2.0, 6, '#ffff00', 'hard_bounce_laser')); }
+            if (pId === 1 && frame % 48 === 0) { bullets.push(new PremiumBullet(player.x, -15, 0, 2.8, 5.5, color, 'order_mirror_chase')); }
+            if (pId === 2 && frame % 18 === 0) { bullets.push(new PremiumBullet(8, player.y, 4, 0, 6, '#ff0055', 'normal')); bullets.push(new PremiumBullet(canvas.width-8, player.y, -4, 0, 6, '#ff0055', 'normal')); }
+            if (pId === 3 && frame % 30 === 0) { let rot=frame*0.09; for(let i=0; i<4; i++) { let a = rot+(Math.PI/2)*i; let dir=(frame%50<25)?1:-1; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*2.0, Math.sin(a)*2.0, 5, '#00ffff', 'shift_angle_run', 0.016*dir)); } }
+            if (pId === 4 && frame % 60 === 0) { for(let i=0; i<16; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/16)*i)*240, cy + Math.sin((Math.PI*2/16)*i)*240, 0, 0, 6, '#ff33ff', 'ring_collapse', cx, cy)); }
+        }
+        else if (stage === 3) {
+            if (pId === 0 && frame % 18 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 3.6, 5, '#ffa500', 'normal')); bullets.push(new PremiumBullet(-20, player.y, 3.6, 0, 5, '#ffa500', 'normal')); }
+            if (pId === 1 && frame % 24 === 0) { bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -3.6, 5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.6, 0, 5, '#ff5500', 'normal')); }
+            if (pId === 2 && frame % 48 === 0) { for(let y=0; y<canvas.height; y+=60) bullets.push(new PremiumBullet(-25, y, 4.0, 0, 4, '#ff00ff', 'normal')); }
+            if (pId === 3 && frame % 48 === 0) { for(let y=30; y<canvas.height; y+=60) bullets.push(new PremiumBullet(canvas.width+25, y, -4.0, 0, 4, '#00ffff', 'normal')); }
+            if (pId === 4 && frame % 10 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*7.2, (Math.random()-0.5)*7.2, 4, '#ffffff', 'normal')); }
+        }
+        else if (stage === 4) {
+            if (pId === 0 && frame % 11 === 0) { bullets.push(new PremiumBullet(player.x - 65, -20, 0, 4.0, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(player.x + 65, -20, 0, 4.0, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(-20, player.y - 65, 4.0, 0, 4.5, '#ffaa00', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y + 65, -4.0, 0, 4.5, '#ffaa00', 'normal')); }
+            if (pId === 1 && frame % 48 === 0) { for(let i=0; i<24; i++) { let a=(Math.PI*2/24)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*130, player.y+Math.sin(a)*130, -Math.cos(a)*1.6, -Math.sin(a)*1.6, 4, '#ff3300', 'normal')); } }
+            if (pId === 2 && frame % 12 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 3.5, '#fff', 'accelerate')); }
+            if (pId === 3 && frame % 30 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=0; i<5; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*3.2, Math.sin(ta)*3.2, 5, '#ff4400', 'normal')); }
+            if (pId === 4 && frame % 54 === 0) { let t=frame*0.05; for(let i=0; i<12; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*3.6, Math.cos(t+i)*3.6, 4.5, color, 'normal')); }
+        }
+        else if (stage === 5) {
+            if (pId === 0 && frame % 26 === 0) { let sa=Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx + Math.cos(sa)*260, cy + Math.sin(sa)*260, 0, 0, 5.5, `hsl(${(frame)%360},100%,50%)`, 'hard_blackhole')); }
+            if (pId === 1 && frame % 15 === 0) { bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 4.4, 0, 5, '#ff00bb', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, Math.random()*canvas.height, -4.4, 0, 5, '#ff00bb', 'normal')); }
+            if (pId === 3 && frame % 36 === 0) { for(let i=0; i<8; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -25, (Math.random()-0.5)*3.2, 3.2, 5, '#00ffff', 'normal')); }
+            if (pId === 3 && frame % 26 === 0) { let ra=frame*0.07; for(let i=0; i<6; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/6)*i)*1.76, Math.sin(ra+(Math.PI*2/6)*i)*1.76, 4.5, '#ffff00', 'shift_angle_run', 0.004)); }
+            if (pId === 4 && frame % 18 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 3.2, 7, '#ffffff', 'brake_aim', 4.4)); }
+        }
+        else if (stage === 6) {
+            if (pId === 0 && frame % 34 === 0) {
+                let targetAngle = Math.atan2(player.y - cy, player.x - cx); let slowSpd = 0.96;
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle)*slowSpd, Math.sin(targetAngle)*slowSpd, 6.5, '#ff1155', 'normal'));
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.16)*slowSpd, Math.sin(targetAngle - 0.16)*slowSpd, 5, '#ff3366', 'normal'));
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.32)*slowSpd, Math.sin(targetAngle - 0.32)*slowSpd, 5, '#ff3366', 'normal'));
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.16)*slowSpd, Math.sin(targetAngle + 0.16)*slowSpd, 5, '#ff3366', 'normal'));
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.32)*slowSpd, Math.sin(targetAngle + 0.32)*slowSpd, 5, '#ff3366', 'normal'));
+            }
+            if (pId === 1 && frame % 66 === 0) { for(let i=0; i<14; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/14)*i)*200, cy + Math.sin((Math.PI*2/14)*i)*200, 0, 0, 6, '#ff00ff', 'prime_return_ring')); }
+            if (pId === 2 && frame % 24 === 0) { bullets.push(new PremiumBullet(-20, player.y, 3.2, 0, 5, '#ffaa00', 'zet_fold_90')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.2, 0, 5, '#ffaa00', 'zet_fold_90')); }
+            if (pId === 3 && frame % 42 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, player.y - 80, 0, 2.8, 5, '#ffffff', 'normal')); bullets.push(new PremiumBullet(Math.random()*canvas.width, player.y + 80, 0, -2.8, 5, '#ffffff', 'normal')); }
+            if (pId === 4 && frame % 48 === 0) { bullets.push(new PremiumBullet(player.x, -25, 0, 0.8, 6, '#ff3366', 'brake_aim', 3.6)); }
+        }
+        else if (stage === 7) {
+            if (pId === 0 && frame % 15 === 0) { let rotAngle = frame * 0.11; for(let i=0; i<8; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(rotAngle + (Math.PI/4)*i)*3.04, Math.sin(rotAngle + (Math.PI/4)*i)*3.04, 4.5, '#00ffff', 'normal')); }
+            if (pId === 7 && frame % 9 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 4.16, 5.5, 'rgba(0,255,255,0.3)', 'normal'));
+            if (pId === 2 && frame % 26 === 0) { for(let i=0; i<6; i++) { let a=(Math.PI*2/6)*i; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.6, Math.sin(a)*1.6, 5, '#ff0055', 'lim_stop_go')); } }
+            if (pId === 3 && frame % 17 === 0) { bullets.push(new PremiumBullet(8, Math.random()*canvas.height, 3.6, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width-8, Math.random()*canvas.height, -3.6, 0, 5, color, 'normal')); }
+            if (pId === 4 && frame % 8 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*9.6, (Math.random()-0.5)*9.6, Math.random()*6+2, `hsl(${Math.random()*360},100%,50%)`, 'normal')); }
+        }
+    }
+}
+
+function processEliteStackEngine() {
+    frame++; const elapsed = (Date.now() - startTime) / 1000;
+
+    if (isInfinityMode) {
+        stackCount = Math.min(5, Math.floor(elapsed / 10) + 1); 
+        while(infinityPatternPool.length < stackCount) addRandomPatternToPool();
+        
+        let label = isHardMode ? "💀 HARD STACK" : "🚀 CHAOS STACK";
+        document.getElementById('cur-pattern-info').innerText = `${label}: ${stackCount} | TIME: ${elapsed.toFixed(2)}s`;
+        document.getElementById('timer-bar').style.width = "100%";
+        document.getElementById('timer-bar').style.backgroundColor = isHardMode ? "#ff2244" : "#cc00ff";
+
+        for(let p of infinityPatternPool) { spawnLayerPattern(p.stage, p.pId); }
+    } else {
+        stackCount = Math.min(5, Math.floor(elapsed / 12) + 1);
+        document.getElementById('cur-pattern-info').innerText = isDodgeMode ? `🎯 DODGE TRACKING | TIME: ${elapsed.toFixed(2)}s / 60s` : `ACTIVE CHAOS STACK: ${stackCount} / 5 | TIME: ${elapsed.toFixed(2)}s`;
+        document.getElementById('timer-bar').style.width = (100 - ((elapsed % 12) / 12 * 100)) + "%";
+        document.getElementById('timer-bar').style.backgroundColor = STAGES[stageIdx].color;
+
+        for(let i=0; i<stackCount; i++) { spawnLayerPattern(stageIdx, i); }
+
+        if (elapsed >= 60 && !hasPrompted60s) {
+            hasPrompted60s = true; isPausedForChoice = true;
+            document.getElementById('dodge-exit-btn').style.display = 'none';
+            
+            if (isDodgeMode) {
+                document.getElementById('clear-popup-desc').innerText = LANG_PACK[gameLang].clearDescDodge.replace("{hits}", dodgeHitCount);
+            } else {
+                document.getElementById('clear-popup-desc').innerText = LANG_PACK[gameLang].clearDescNormal;
+            }
+            
+            savePermanentScore(60.00, dodgeHitCount);
+            document.getElementById('continue-confirm').style.display = 'block';
+        }
+    }
+}
+
+function savePermanentScore(finalTime, currentDodgeHits) {
+    let baseKey = isInfinityMode ? 'inf' : `stage_${stageIdx}`;
+    let subKey = isHardMode ? 'hard' : 'normal';
+    
+    let timeKey = `${baseKey}_${subKey}_time`;
+    let dodgeKey = `${baseKey}_${subKey}_dodge`;
+    
+    let prevTime = gameRecords[timeKey] || 0;
+    if(finalTime > prevTime) { gameRecords[timeKey] = finalTime; }
+    
+    if(isDodgeMode) {
+        let prevDodge = gameRecords[dodgeKey];
+        if(prevDodge === undefined || currentDodgeHits < prevDodge) {
+            gameRecords[dodgeKey] = currentDodgeHits;
+        }
+    }
+    
+    localStorage.setItem('trans_records_v4_2026', JSON.stringify(gameRecords));
+}
+
+window.addEventListener('touchstart', e => { if(!isRunning || isPausedForChoice) return; const t = e.touches[0]; lastTouch.x = t.clientX; lastTouch.y = t.clientY; }, { passive: true });
+window.addEventListener('touchmove', e => {
+    if(!isRunning || isPausedForChoice) return; const t = e.touches[0];
+    let sens = isHardMode ? 1.6 : 1.4; const dx = (t.clientX - lastTouch.x) * sens; const dy = (t.clientY - lastTouch.y) * sens;
+    player.x = Math.max(player.r, Math.min(canvas.width - player.r, player.x + dx)); player.y = Math.max(player.r, Math.min(canvas.height - player.r, player.y + dy));
+    lastTouch.x = t.clientX; lastTouch.y = t.clientY;
+}, { passive: true });
+
+let isMouseDown = false;
+window.addEventListener('mousedown', e => { 
+    if(!isPausedForChoice && isRunning) { isMouseDown = true; lastTouch.x = e.clientX; lastTouch.y = e.clientY; } 
+});
+window.addEventListener('mousemove', e => {
+    if(!isRunning || !isMouseDown || isPausedForChoice) return;
+    let sens = isHardMode ? 1.45 : 1.3;
+    player.x = Math.max(player.r, Math.min(canvas.width - player.r, player.x + (e.clientX - lastTouch.x) * sens));
+    player.y = Math.max(player.r, Math.min(canvas.height - player.r, player.y + (e.clientY - lastTouch.y) * sens));
+    lastTouch.x = e.clientX; lastTouch.y = e.clientY;
+});
+window.addEventListener('mouseup', () => isMouseDown = false);
+window.addEventListener('mouseleave', () => isMouseDown = false);
 
 function animate() {
-    requestAnimationFrame(animate);
-    if(isDead) return;
+    if (!isRunning || isPausedForChoice) return;
 
-    // 시점 회전 (스와이프값 반영)
-    cameraLon -= rotationDeltaLon;
-    // 시점 회전값을 고려하여 카메라가 앞을 바라보게 함
-    const targetX = Math.cos(cameraLon);
-    const targetZ = Math.sin(cameraLon);
-    camera.lookAt(camera.position.x + targetX, 1.6, camera.position.z + targetZ);
+    playerHistory.push({ x: player.x, y: player.y });
+    if(playerHistory.length > 15) playerHistory.shift(); 
 
-    // 이동 로직 (시점 방향 고려)
-    const speed = 0.15;
-    const forward = new THREE.Vector3(targetX, 0, targetZ);
-    const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0), forward);
-    
-    camera.position.add(forward.multiplyScalar(-moveDir.z * speed)); // 전후
-    camera.position.add(right.multiplyScalar(moveDir.x * speed));    // 좌우
-    camera.position.y = 1.6; // 사람 눈높이 유지
+    ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = 'rgba(2, 1, 5, 0.28)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    updateBackground(); drawBackground();
+    ctx.globalCompositeOperation = 'screen';
+    processEliteStackEngine();
 
-    // --- AI 업데이트 (스마일러 및 사람) ---
-    // 플레이어 감지용 충돌 박스
-    const playerBox = new THREE.Box3().setFromCenterAndSize(camera.position, new THREE.Vector3(1, 2, 1));
+    for(let i = glassShards.length - 1; i >= 0; i--) {
+        let s = glassShards[i]; s.x += s.vx; s.y += s.vy; s.rot += s.rotSpeed; s.alpha -= s.decay; if(s.alpha <= 0) { glassShards.splice(i, 1); continue; }
+        ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.rot); ctx.fillStyle = s.color; ctx.globalAlpha = s.alpha; ctx.beginPath(); ctx.moveTo(s.points[0].dx, s.points[0].dy);
+        for(let p=1; p<s.points.length; p++) ctx.lineTo(s.points[p].dx, s.points[p].dy);
+        ctx.closePath(); ctx.fill(); ctx.restore();
+    }
+    ctx.globalAlpha = 1.0;
 
-    // 8-1. 스마일러 AI 로직
-    smilers.forEach((s, index) => {
-        const sPos = s.mesh.position;
-        // 스폰 구역(Safe Zone) 충돌 체크
-        let inSafeZone = false;
-        safeZone.children.forEach(box => {
-            if(new THREE.Box3().setFromObject(box).containsPoint(sPos)) inSafeZone = true;
-        });
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for(let i = 1; i < playerHistory.length; i++) {
+        let ratio = i / playerHistory.length;
+        ctx.strokeStyle = isHardMode ? `rgba(255, 34, 68, ${ratio * 0.42})` : `rgba(0, 255, 255, ${ratio * 0.42})`;
+        ctx.lineWidth = (isHardMode ? 7 : 11) * ratio; ctx.beginPath(); ctx.moveTo(playerHistory[i-1].x, playerHistory[i-1].y); ctx.lineTo(playerHistory[i].x, playerHistory[i].y); ctx.stroke();
+    }
 
-        if (inSafeZone) { // 스폰 지역에 닿으면 사망
-            scene.remove(s.mesh); smilers.splice(index, 1); return;
-        }
-
-        // 타겟 감지 (인간일 때만 플레이어 감지)
-        if (playerStatus === 'human') {
-            if(isTargetVisible(s.mesh, camera, checkRaycaster)) s.target = camera;
-            else if(s.target === camera) s.target = null; // 시야에서 사라지면 타겟 해제
-        } else { // 플레이어가 스마일러면 타겟 해제
-            if(s.target === camera) s.target = null;
-        }
-
-        // 사람 AI 감지
-        humans.forEach(h => {
-            if(isTargetVisible(s.mesh, h.mesh, checkRaycaster)) {
-                // 더 가까운 타겟 설정
-                if(!s.target || s.mesh.position.distanceTo(h.mesh.position) < s.mesh.position.distanceTo(s.target.position)) s.target = h.mesh;
-            }
-        });
-
-        // 이동 로직 (추적 or 배회)
-        if (s.target) {
-            const dir = new THREE.Vector3().subVectors(s.target.position, sPos).normalize();
-            s.mesh.position.add(dir.multiplyScalar(0.04)); // 추적 속도
-            if(s.target === camera) dangerOverlay.style.display = 'block'; // 플레이어 추적 시 빨간 테두리
-        } else {
-            // 배회 모드 (간단하게 구현)
-            s.mesh.position.add(s.wanderDir.clone().multiplyScalar(0.02));
-            if(frame % 100 === 0) s.wanderDir = new THREE.Vector3(Math.random()*2-1, 0, Math.random()*2-1).normalize();
-        }
-
-        // 플레이어 감염 체크 (닿으면 사망 및 스마일러화)
-        if (playerStatus === 'human' && sPos.distanceTo(camera.position) < 1.5) {
-            infectPlayer();
-        }
-    });
-
-    // 8-2. 사람 AI 로직 (간단한 배회 및 감염)
-    humans.forEach((h, hIndex) => {
-        h.mesh.position.add(h.wanderDir.clone().multiplyScalar(0.02));
-        if(frame % 120 === 0) h.wanderDir = new THREE.Vector3(Math.random()*2-1, 0, Math.random()*2-1).normalize();
+    for (let i = bullets.length - 1; i >= 0; i--) {
+        const b = bullets[i]; b.update(); b.draw(); const dist = Math.hypot(player.x - b.x, player.y - b.y);
         
-        // 스마일러와 충돌 체크 (스마일러로 변신)
-        smilers.forEach(s => {
-            if(h.mesh.position.distanceTo(s.mesh.position) < 1.2) {
-                // 인간 제거, 스마일러 스폰
-                spawnEntity('smiler', 0xffeb3b, smilers);
-                scene.remove(h.mesh); humans.splice(hIndex, 1);
+        if (dist < player.r + b.r * 0.42) {
+            triggerGlassShatter(b.x, b.y, b.color);
+            
+            if(isDodgeMode) {
+                dodgeHitCount++; document.getElementById('dodge-hit-counter').innerText = `🎯 DODGE HIT: ${dodgeHitCount}`;
+                bullets.splice(i, 1); continue;
+            } else {
+                isRunning = false; ctx.globalCompositeOperation = 'source-over';
+                let finalScore = ((Date.now() - startTime) / 1000);
+                savePermanentScore(finalScore, dodgeHitCount);
+                document.getElementById('dodge-exit-btn').style.display = 'none';
+
+                let modeTitle = isHardMode ? "💀 HARD SYSTEM CRASH" : "SYSTEM CRASH";
+                document.getElementById('game-over-title').innerText = modeTitle;
+                document.getElementById('survival-result').innerText = LANG_PACK[gameLang].survivalPrefix + finalScore.toFixed(2) + LANG_PACK[gameLang].survivalSuffix;
+                document.getElementById('game-over').style.display = 'block'; return;
             }
-        });
-    });
-
-    // 8-3. 하얀 액체 충돌 체크 (감염)
-    liquidPuddles.forEach(puddle => {
-        if (playerStatus === 'human' && new THREE.Box3().setFromObject(puddle).intersectsBox(playerBox)) {
-            infectPlayer();
         }
-    });
+        if (b.x < -60 || b.x > canvas.width + 60 || b.y < -60 || b.y > canvas.height + 60 || b.life > 1100) { bullets.splice(i, 1); }
+    }
 
-    frame++; renderer.render(scene, camera);
+    ctx.fillStyle = isHardMode ? '#ff1144' : '#00ffff'; ctx.beginPath(); ctx.arc(player.x, player.y, player.r + 2, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(player.x, player.y, player.r - 0.5, 0, Math.PI * 2); ctx.fill();
+
+    requestAnimationFrame(animate);
 }
-let frame = 0; animate();
-
-// --- 9. 감염 함수 (스마일러화) ---
-function infectPlayer() {
-    if(playerStatus === 'smiler') return;
-    playerStatus = 'smiler';
-    uiInfo.textContent = "상태: Smiler (이제 모든 사람을 감염시키세요)";
-    uiInfo.style.color = "#ffeb3b";
-    
-    // 플레이어 외형 변경 (간단하게 색상 변경 효과)
-    ambientLight.color.set(0xffeb3b); // 주변광 노랗게
-    dangerOverlay.style.display = 'none'; // 추적 해제
-}
-
-window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
 </script>
 </body>
 </html>
+
