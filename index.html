@@ -11,8 +11,8 @@
             font-family: 'Orbitron', sans-serif; color: #fff; 
             touch-action: none; -webkit-user-select: none; user-select: none;
         }
-        canvas { display: block; position: absolute; top: 0; left: 0; z-index: 1; }
-        #ui-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; }
+        canvas { display: block; position: absolute; top: 0; z-index: 1; transition: border 0.3s; }
+        #ui-layer { position: absolute; top: 0; height: 100%; z-index: 2; pointer-events: none; }
         
         #overlay { 
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); 
@@ -76,18 +76,15 @@
         }
         h1 { font-weight: 900; letter-spacing: 3px; margin: 0; font-size: 1.5rem; }
 
-        #init-lang-popup {
+        .popup-panel {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
             pointer-events: all; text-align: center; background: rgba(4, 2, 12, 0.99);
             padding: 35px 25px; border: 2px solid #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.3);
             border-radius: 16px; width: 80%; max-width: 320px; z-index: 100;
         }
-        #init-story-popup {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            pointer-events: all; text-align: center; background: rgba(4, 2, 12, 0.99);
-            padding: 35px 25px; border: 2px solid #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.3);
-            border-radius: 16px; width: 84%; max-width: 380px; z-index: 99; display: none;
-        }
+        #init-story-popup { max-width: 380px; width: 84%; z-index: 99; display: none; }
+        #init-device-popup { display: none; }
+
         .lang-select-btn {
             background: #111827; border: 1px solid #00ffff; color: #fff; padding: 12px 0;
             width: 100%; font-family: 'Orbitron', sans-serif; font-size: 0.9rem; font-weight: 700;
@@ -112,13 +109,19 @@
     <div id="ui-layer">
         <button id="dodge-exit-btn" onclick="forceExitDodge()">X EXIT</button>
 
-        <div id="init-lang-popup">
+        <div id="init-lang-popup" class="popup-panel">
             <h2 style="font-size:1.1rem; margin-top:0; letter-spacing:1px; color:#00ffff;">SELECT LANGUAGE</h2>
             <button class="lang-select-btn" onclick="selectInitialLanguage('ko')">한국어 (KO)</button>
             <button class="lang-select-btn" onclick="selectInitialLanguage('en')">ENGLISH (EN)</button>
         </div>
 
-        <div id="init-story-popup">
+        <div id="init-device-popup" class="popup-panel">
+            <h2 id="device-title" style="font-size:1.1rem; margin-top:0; letter-spacing:1px; color:#00ffff;"></h2>
+            <button class="lang-select-btn" id="btn-device-mobile" onclick="selectDevice('mobile')"></button>
+            <button class="lang-select-btn" id="btn-device-pc" onclick="selectDevice('pc')"></button>
+        </div>
+
+        <div id="init-story-popup" class="popup-panel">
             <h1 id="story-title" style="background: linear-gradient(45deg, #00ffff, #ff00ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></h1>
             <p id="story-desc" style="font-size: 0.8rem; line-height: 1.6; color: #cbd5e1; margin: 20px 0; text-align: left; word-break: keep-all;"></p>
             <button class="stage-btn" id="story-confirm-btn" style="border-color: #00ffff; width: 140px;" onclick="closeStoryAndShowMain()"></button>
@@ -195,9 +198,13 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 
 let gameLang = 'ko';
+let deviceMode = 'pc';
 
 const LANG_PACK = {
     ko: {
+        deviceTitle: "환경 모드 선택",
+        deviceMobile: "모바일 환경 (PC 화면 제한)",
+        devicePC: "PC 환경 (전체 화면 적용)",
         storyTitle: "SYSTEM INITIALIZE",
         storyDesc: "차원 균열 프로토콜이 활성화되었습니다. 당신은 연산 구조 붕괴로 인해 무한히 사방에서 쏟아지는 수치 그리드 데이터를 회피하고 코어를 보존해야 합니다. 8개의 차원 영역에 걸쳐 다중 중첩되는 시스템 간섭 속에서 한계 데이터 버퍼를 견뎌내십시오.",
         storyConfirm: "접속 개시",
@@ -219,6 +226,9 @@ const LANG_PACK = {
         survivalSuffix: "초 기록\n\n(RECORDS 탭에서 최적 피격 스코어 영구 확인 가능!)"
     },
     en: {
+        deviceTitle: "SELECT ENVIRONMENT",
+        deviceMobile: "MOBILE (Restricted Area)",
+        devicePC: "PC (Full Screen)",
         storyTitle: "SYSTEM INITIALIZE",
         storyDesc: "Dimensional rift protocols have been initialized. You must evade the numeric grid data cascading infinitely from all directions due to computational layer collapse. Preserve your core and withstand the multi-stacked system interference across 8 dimensional sectors.",
         storyConfirm: "INITIALIZE ACCESS",
@@ -278,6 +288,18 @@ let gameRecords = JSON.parse(localStorage.getItem('trans_records_v4_2026')) || {
 function selectInitialLanguage(lang) {
     gameLang = lang;
     document.getElementById('init-lang-popup').style.display = 'none';
+    
+    document.getElementById('device-title').innerText = LANG_PACK[gameLang].deviceTitle;
+    document.getElementById('btn-device-mobile').innerText = LANG_PACK[gameLang].deviceMobile;
+    document.getElementById('btn-device-pc').innerText = LANG_PACK[gameLang].devicePC;
+    
+    document.getElementById('init-device-popup').style.display = 'block';
+}
+
+function selectDevice(mode) {
+    deviceMode = mode;
+    document.getElementById('init-device-popup').style.display = 'none';
+    resize();
     
     document.getElementById('story-title').innerText = LANG_PACK[gameLang].storyTitle;
     document.getElementById('story-desc').innerText = LANG_PACK[gameLang].storyDesc;
@@ -416,12 +438,33 @@ function drawBackground() {
 }
 
 function resize() {
-    canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+    let w = window.innerWidth;
+    if (deviceMode === 'mobile') {
+        w = Math.min(window.innerWidth, 480);
+    }
+    canvas.width = w;
+    canvas.height = window.innerHeight;
+    
+    canvas.style.left = '50%';
+    canvas.style.transform = 'translateX(-50%)';
+    
+    let uiLayer = document.getElementById('ui-layer');
+    uiLayer.style.width = w + 'px';
+    uiLayer.style.left = '50%';
+    uiLayer.style.transform = 'translateX(-50%)';
+
+    if(deviceMode === 'mobile' && window.innerWidth > w) {
+        canvas.style.borderLeft = '1px solid rgba(255,255,255,0.05)';
+        canvas.style.borderRight = '1px solid rgba(255,255,255,0.05)';
+    } else {
+        canvas.style.borderLeft = 'none';
+        canvas.style.borderRight = 'none';
+    }
+
     if(!isRunning) { player.x = canvas.width / 2; player.y = canvas.height * 0.75; }
     initBackground();
 }
 window.addEventListener('resize', resize);
-resize();
 
 function showMain() {
     isRunning = false; isPausedForChoice = false; isMouseDown = false;
@@ -477,7 +520,7 @@ function startGame(idx, infinityOption) {
     }
     
     player.x = canvas.width / 2; player.y = canvas.height * 0.75;
-    for(let i=0; i<15; i++) playerHistory.push({x: player.x, y: player.y});
+    for(let i=0; i<24; i++) playerHistory.push({x: player.x, y: player.y});
 
     isRunning = true; animate();
 }
@@ -818,7 +861,7 @@ function animate() {
     if (!isRunning || isPausedForChoice) return;
 
     playerHistory.push({ x: player.x, y: player.y });
-    if(playerHistory.length > 15) playerHistory.shift(); 
+    if(playerHistory.length > 24) playerHistory.shift(); 
 
     ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = 'rgba(2, 1, 5, 0.28)'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     updateBackground(); drawBackground();
@@ -833,11 +876,39 @@ function animate() {
     }
     ctx.globalAlpha = 1.0;
 
+    // 자연스럽고 부드러운 곡선(Bezier) 분신 보간법 처리
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    for(let i = 1; i < playerHistory.length; i++) {
+    for(let i = 1; i < playerHistory.length - 1; i++) {
         let ratio = i / playerHistory.length;
         ctx.strokeStyle = isHardMode ? `rgba(255, 34, 68, ${ratio * 0.42})` : `rgba(0, 255, 255, ${ratio * 0.42})`;
-        ctx.lineWidth = (isHardMode ? 7 : 11) * ratio; ctx.beginPath(); ctx.moveTo(playerHistory[i-1].x, playerHistory[i-1].y); ctx.lineTo(playerHistory[i].x, playerHistory[i].y); ctx.stroke();
+        ctx.lineWidth = (isHardMode ? 7 : 11) * ratio; 
+        
+        ctx.beginPath();
+        let p0 = playerHistory[i-1];
+        let p1 = playerHistory[i];
+        let p2 = playerHistory[i+1];
+        
+        let xc1 = (p0.x + p1.x) / 2;
+        let yc1 = (p0.y + p1.y) / 2;
+        let xc2 = (p1.x + p2.x) / 2;
+        let yc2 = (p1.y + p2.y) / 2;
+
+        if (i === 1) { ctx.moveTo(p0.x, p0.y); ctx.quadraticCurveTo(p1.x, p1.y, xc2, yc2); } 
+        else { ctx.moveTo(xc1, yc1); ctx.quadraticCurveTo(p1.x, p1.y, xc2, yc2); }
+        ctx.stroke();
+    }
+    
+    // 마지막 꼬리 연결점 곡선 마무리
+    let last = playerHistory.length - 1;
+    if (last > 1) {
+        let ratio = last / playerHistory.length;
+        ctx.strokeStyle = isHardMode ? `rgba(255, 34, 68, ${ratio * 0.42})` : `rgba(0, 255, 255, ${ratio * 0.42})`;
+        ctx.lineWidth = (isHardMode ? 7 : 11) * ratio;
+        ctx.beginPath();
+        let pPrev = playerHistory[last-1]; let pLast = playerHistory[last];
+        ctx.moveTo((pPrev.x + pLast.x) / 2, (pPrev.y + pLast.y) / 2);
+        ctx.lineTo(pLast.x, pLast.y);
+        ctx.stroke();
     }
 
     for (let i = bullets.length - 1; i >= 0; i--) {
@@ -872,4 +943,3 @@ function animate() {
 </script>
 </body>
 </html>
-
