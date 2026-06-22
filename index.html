@@ -164,14 +164,15 @@
                 </div>
 
                 <div class="stage-grid">
-                    <button class="stage-btn" onclick="startGame(0, false)" style="border-color:#555;">0<br><span style="font-size:0.58rem;color:#aaa;">VOID</span></button>
+                    <button class="stage-btn" onclick="startGame(0, false)" style="border-color:#8c8c8c;">0<br><span style="font-size:0.58rem;color:#8c8c8c;">VOID</span></button>
                     <button class="stage-btn" onclick="startGame(1, false)" style="border-color:#00ffcc;">1<br><span style="font-size:0.58rem;color:#00ffcc;">PRIME</span></button>
-                    <button class="stage-btn" onclick="startGame(2, false)" style="border-color:#ffff00;">10<br><span style="font-size:0.58rem;color:#ffff00;">ORDER</span></button>
-                    <button class="stage-btn" onclick="startGame(3, false)" style="border-color:#ffaa00;">100<br><span style="font-size:0.58rem;color:#ffaa00;">CENTUM</span></button>
-                    <button class="stage-btn" onclick="startGame(4, false)" style="border-color:#ff5500;">10000<br><span style="font-size:0.58rem;color:#ff5500;">MYRIAD</span></button>
-                    <button class="stage-btn" onclick="startGame(5, false)" style="border-color:#ff00ff;">10^10<br><span style="font-size:0.58rem;color:#ff00ff;">GALAXY</span></button>
-                    <button class="stage-btn" onclick="startGame(6, false)" style="border-color:#ff3366;">1e21<br><span style="font-size:0.58rem;color:#ff3366;">ZETTA</span></button>
-                    <button class="stage-btn" onclick="startGame(7, false)" style="border-color:#00ffff;">1e308<br><span style="font-size:0.0ffff;">LIMIT</span></button>
+                    <button class="stage-btn" onclick="startGame(2, false)" style="border-color:#77ff77;">2<br><span style="font-size:0.58rem;color:#77ff77;">DUAL</span></button>
+                    <button class="stage-btn" onclick="startGame(3, false)" style="border-color:#ffff00;">10<br><span style="font-size:0.58rem;color:#ffff00;">ORDER</span></button>
+                    <button class="stage-btn" onclick="startGame(4, false)" style="border-color:#ffaa00;">100<br><span style="font-size:0.58rem;color:#ffaa00;">CENTUM</span></button>
+                    <button class="stage-btn" onclick="startGame(5, false)" style="border-color:#ff5500;">10000<br><span style="font-size:0.58rem;color:#ff5500;">MYRIAD</span></button>
+                    <button class="stage-btn" onclick="startGame(6, false)" style="border-color:#ff00ff;">10^10<br><span style="font-size:0.58rem;color:#ff00ff;">GALAXY</span></button>
+                    <button class="stage-btn" onclick="startGame(7, false)" style="border-color:#ff3366;">1e21<br><span style="font-size:0.58rem;color:#ff3366;">ZETTA</span></button>
+                    <button class="stage-btn" onclick="startGame(8, false)" style="border-color:#00ffff;">1e308<br><span style="font-size:0.58rem;color:#00ffff;">LIMIT</span></button>
                     <button class="stage-btn infinity-btn" id="btn-infinity-mode" onclick="startGame(-1, true)"></button>
                 </div>
             </div>
@@ -196,8 +197,8 @@
                     <option value="normal">NORMAL</option>
                     <option value="hard">HARD</option>
                 </select><br>
-                <label style="font-size:0.8rem; color:#aaa;">STAGE (0~7):</label> 
-                <input type="number" id="test-stage-input" class="test-input" min="0" max="7" value="0"><br>
+                <label style="font-size:0.8rem; color:#aaa;">STAGE (0~8):</label> 
+                <input type="number" id="test-stage-input" class="test-input" min="0" max="8" value="0"><br>
                 <label style="font-size:0.8rem; color:#aaa;">PATTERN (0~4):</label> 
                 <input type="number" id="test-pattern-input" class="test-input" min="0" max="4" value="0"><br>
             </div>
@@ -234,18 +235,18 @@ const LANG_PACK = {
         deviceMobile: "모바일 환경 (PC 화면 제한)",
         devicePC: "PC 환경 (전체 화면 적용)",
         storyTitle: "SYSTEM INITIALIZE",
-        storyDesc: "차원 균열 프로토콜이 활성화되었습니다. 당신은 연산 구조 붕괴로 인해 무한히 사방에서 쏟아지는 수치 그리드 데이터를 회피하고 코어를 보존해야 합니다. 8개의 차원 영역에 걸쳐 다중 중첩되는 시스템 간섭 속에서 한계 데이터 버퍼를 견뎌내십시오.",
+        storyDesc: "차원 균열 프로토콜이 활성화되었습니다. 당신은 연산 구조 붕괴로 인해 무한히 사방에서 쏟아지는 수치 그리드 데이터를 회피하고 코어를 보존해야 합니다. 다중 중첩되는 시스템 간섭 속에서 한계 데이터 버퍼를 견뎌내십시오.",
         storyConfirm: "접속 개시",
-        mainSubtitle: "8개 차원 총 40개 고유 스택 패턴 시스템 완전 복구 완료",
+        mainSubtitle: "9개 차원 총 45개 고유 스택 패턴 시스템 완전 복구 완료",
         playTab: "🎮 PLAY GAME",
         recordTab: "🏆 RECORDS",
         dodgeLabel: "🎯 DODGE MODE (피격 영구 기록 반영)",
-        hardLabel: "💀 HARD MODE (창의적 40개 개조 시퀀스)",
-        infBtn: "🚀 INFINITY MODE<br><span style='font-size:0.6rem;color:#ffccff;'>40 PATTERNS FULL RANDOM CHAOS STACK</span>",
+        hardLabel: "💀 HARD MODE (창의적 45개 개조 시퀀스)",
+        infBtn: "🚀 INFINITY MODE<br><span style='font-size:0.6rem;color:#ffccff;'>45 PATTERNS FULL RANDOM CHAOS STACK</span>",
         sectorBoard: "PERMANENT SECTOR BOARD",
-        wipeBtn: "파쇄",
+        wipeBtn: "WIPE (설정 포함 완전 파쇄)",
         standby: "대기 모드",
-        wipeConfirm: "모든 타임 어택 및 돋지 모드 기록을 완전 파쇄하시겠습니까?",
+        wipeConfirm: "모든 타임 어택, 돋지 모드 기록 및 초기 세팅을 완전 파쇄하시겠습니까?",
         clearDescNormal: "60초 클리어 완수! 데이터 칩셋 각인 완료",
         clearDescDodge: "🎯 돋지 모드 완주 성공! 최종 피격 수: [ {hits}회 ]",
         continueBtn: "계속하기",
@@ -258,18 +259,18 @@ const LANG_PACK = {
         deviceMobile: "MOBILE (Restricted Area)",
         devicePC: "PC (Full Screen)",
         storyTitle: "SYSTEM INITIALIZE",
-        storyDesc: "Dimensional rift protocols have been initialized. You must evade the numeric grid data cascading infinitely from all directions due to computational layer collapse. Preserve your core and withstand the multi-stacked system interference across 8 dimensional sectors.",
+        storyDesc: "Dimensional rift protocols have been initialized. Evade the numeric grid data cascading infinitely due to computational layer collapse. Preserve your core and withstand multi-stacked system interference.",
         storyConfirm: "INITIALIZE ACCESS",
-        mainSubtitle: "8 Dimensions Total 40 Unique Stack Pattern System Fully Restored",
+        mainSubtitle: "9 Dimensions Total 45 Unique Stack Pattern System Fully Restored",
         playTab: "🎮 PLAY GAME",
         recordTab: "🏆 RECORDS",
         dodgeLabel: "🎯 DODGE MODE (PERMANENT HIT REGISTERED)",
-        hardLabel: "💀 HARD MODE (CREATIVE 40 MODIFIED SEQUENCE)",
-        infBtn: "🚀 INFINITY MODE<br><span style='font-size:0.6rem;color:#ffccff;'>40 PATTERNS FULL RANDOM CHAOS STACK</span>",
+        hardLabel: "💀 HARD MODE (CREATIVE 45 MODIFIED SEQUENCE)",
+        infBtn: "🚀 INFINITY MODE<br><span style='font-size:0.6rem;color:#ffccff;'>45 PATTERNS FULL RANDOM CHAOS STACK</span>",
         sectorBoard: "PERMANENT SECTOR BOARD",
-        wipeBtn: "WIPE",
+        wipeBtn: "WIPE (FULL RESET)",
         standby: "STANDBY",
-        wipeConfirm: "Do you want to completely wipe all time attack and dodge mode records?",
+        wipeConfirm: "Completely wipe all time attack, dodge mode records, and initial settings?",
         clearDescNormal: "60s Clear Completed! Data Chipset Engraving Finished",
         clearDescDodge: "🎯 Dodge Mode Completed! Final Hits: [ {hits} HITS ]",
         continueBtn: "CONTINUE",
@@ -280,14 +281,15 @@ const LANG_PACK = {
 };
 
 const STAGES = [
-    { name: "0 : VOID (공허)", color: "#8c8c8c" },
-    { name: "1 : PRIME (기원)", color: "#00ffcc" },
-    { name: "10 : ORDER (대칭)", color: "#ffff00" },
-    { name: "100 : CENTUM (매트릭스)", color: "#ffaa00" },
-    { name: "10000 : MYRIAD (구체)", color: "#ff5500" },
-    { name: "10^10 : GALAXY (은하)", color: "#ff00ff" },
-    { name: "1e21 : ZETTA (장막)", color: "#ff3366" },
-    { name: "1e308 : LIMIT (종말)", color: "#00ffff" }
+    { name: "0 : VOID (공허)", color: "#8c8c8c", val: 0 },
+    { name: "1 : PRIME (기원)", color: "#00ffcc", val: 1 },
+    { name: "2 : DUAL (이중)", color: "#77ff77", val: 2 },
+    { name: "10 : ORDER (대칭)", color: "#ffff00", val: 10 },
+    { name: "100 : CENTUM (매트릭스)", color: "#ffaa00", val: 100 },
+    { name: "10000 : MYRIAD (구체)", color: "#ff5500", val: 10000 },
+    { name: "10^10 : GALAXY (은하)", color: "#ff00ff", val: 1e10 },
+    { name: "1e21 : ZETTA (장막)", color: "#ff3366", val: 1e21 },
+    { name: "1e308 : LIMIT (종말)", color: "#00ffff", val: 1e308 }
 ];
 
 let player = { x: 0, y: 0, r: 5 };
@@ -319,7 +321,20 @@ let testPatternParam = 0;
 
 let gameRecords = JSON.parse(localStorage.getItem('trans_records_v4_2026')) || {};
 
-// PC 난이도 보정 상수 (PC일때 1.5배 스피드 및 생성량 강화)
+// 초기 설정 자동 로드 적용
+window.onload = function() {
+    let savedSettings = JSON.parse(localStorage.getItem('trans_settings_2026'));
+    if(savedSettings) {
+        gameLang = savedSettings.lang;
+        deviceMode = savedSettings.device;
+        document.getElementById('init-lang-popup').style.display = 'none';
+        document.getElementById('init-device-popup').style.display = 'none';
+        applyLanguageToUI();
+        document.getElementById('overlay').style.display = 'block';
+        resize();
+    }
+};
+
 function getPcMult() { return deviceMode === 'pc' ? 1.5 : 1.0; }
 
 function selectInitialLanguage(lang) {
@@ -335,6 +350,7 @@ function selectInitialLanguage(lang) {
 
 function selectDevice(mode) {
     deviceMode = mode;
+    localStorage.setItem('trans_settings_2026', JSON.stringify({lang: gameLang, device: deviceMode}));
     document.getElementById('init-device-popup').style.display = 'none';
     resize();
     
@@ -411,7 +427,10 @@ function renderRecordBoard() {
 
 function clearAllData() {
     if(confirm(LANG_PACK[gameLang].wipeConfirm)) {
-        gameRecords = {}; localStorage.removeItem('trans_records_v4_2026'); renderRecordBoard();
+        gameRecords = {}; 
+        localStorage.removeItem('trans_records_v4_2026'); 
+        localStorage.removeItem('trans_settings_2026'); // 설정까지 초기화
+        location.reload(); // 완전히 새로고침하여 적용
     }
 }
 
@@ -514,6 +533,13 @@ function updateLifeUI() {
 }
 
 function startGame(idx, infinityOption, testFlag = false) {
+    let wantsDodge = document.getElementById('dodge-mode-toggle').checked;
+    // 돋지 모드 인피니티 차단
+    if (infinityOption && wantsDodge) {
+        alert("돋지 모드에서는 인피니티에 진입할 수 없습니다 꿀꿀 🐖!");
+        return;
+    }
+
     resize();
     isTestMode = testFlag;
     stageIdx = idx; isInfinityMode = infinityOption;
@@ -522,7 +548,7 @@ function startGame(idx, infinityOption, testFlag = false) {
     dodgeHitCount = 0; frame = 0; startTime = Date.now();
     playerLife = 3; pInvincibility = 0;
     
-    isDodgeMode = document.getElementById('dodge-mode-toggle').checked;
+    isDodgeMode = wantsDodge;
     if(!isTestMode) isHardMode = document.getElementById('hard-mode-toggle').checked;
     
     player.r = isHardMode ? 2.5 : 5.0;
@@ -559,7 +585,6 @@ function continueEndless() {
     isPausedForChoice = false; startTime = Date.now() - 60000; animate();
 }
 
-// 파편이 관성을 받도록 수정
 function triggerGlassShatter(x, y, color, inertiaVx = 0, inertiaVy = 0) {
     const shardCount = 6; 
     for(let i=0; i<shardCount; i++) {
@@ -582,12 +607,12 @@ class PremiumBullet {
             case 'cos_wave': this.y += Math.cos(this.life * 0.05) * this.p1; break;
             case 'accelerate': this.vx *= 1.014; this.vy *= 1.014; break;
             
-            // 점근 유도 패턴 추가 (블랙홀)
+            // 점근 유도 패턴
             case 'asymptotic_homing':
                 let adx = player.x - this.x; let ady = player.y - this.y;
                 let adist = Math.hypot(adx, ady);
-                let pull = this.p1 || 0.15; // 당기는 힘
-                let maxSpeed = this.p2 || 4.5;
+                let pull = this.p1 || 0.1; // 너프 적용
+                let maxSpeed = this.p2 || 4.0;
                 this.vx += (adx / (adist + 1)) * pull;
                 this.vy += (ady / (adist + 1)) * pull;
                 let curSpeed = Math.hypot(this.vx, this.vy);
@@ -607,7 +632,7 @@ class PremiumBullet {
                 if(this.life === 48) {
                     this.behavior = 'normal'; this.color = '#ff0055'; this.r = 4;
                     let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
-                    this.vx = (dx/(d+1))*2.8; this.vy = (dy/(d+1))*2.8;
+                    this.vx = (dx/(d+1))*2.4; this.vy = (dy/(d+1))*2.4; // 30% 너프
                 }
                 break;
             case 'void_sink_black':
@@ -639,7 +664,7 @@ class PremiumBullet {
                 if(this.bounceCount < 2) {
                     if(this.x < 8 || this.x > canvas.width - 8 || this.y < 8 || this.y > canvas.height - 8) {
                         let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
-                        this.vx = (dx / (d + 1)) * 2.72; this.vy = (dy / (d + 1)) * 2.72;
+                        this.vx = (dx / (d + 1)) * 2.2; this.vy = (dy / (d + 1)) * 2.2; // 속도 감소 너프
                         this.bounceCount++; this.color = '#ff00ff';
                     }
                 }
@@ -648,26 +673,26 @@ class PremiumBullet {
                 if(this.life % 30 === 0) {
                     let tx = canvas.width - player.x; let ty = canvas.height - player.y;
                     let dx = tx - this.x; let dy = ty - this.y; let d = Math.hypot(dx, dy);
-                    this.vx = (dx/(d+1))*2.0; this.vy = (dy/(d+1))*2.0;
+                    this.vx = (dx/(d+1))*1.6; this.vy = (dy/(d+1))*1.6; // 너프 적용
                 }
                 break;
 
             case 'hard_blackhole':
                 if(this.life > 30 && this.life < 65) {
                     let dx = canvas.width/2 - this.x; let dy = canvas.height/2 - this.y; let d = Math.hypot(dx, dy);
-                    this.x += (dx/(d+1))*3.2; this.y += (dy/(d+1))*3.2;
+                    this.x += (dx/(d+1))*2.8; this.y += (dy/(d+1))*2.8; // 속도 감소 너프
                 } else if(this.life === 65) {
                     let dx = player.x - this.x; let dy = player.y - this.y; let d = Math.hypot(dx, dy);
-                    this.vx = (dx/(d+1))*3.36; this.vy = (dy/(d+1))*3.36;
+                    this.vx = (dx/(d+1))*2.8; this.vy = (dy/(d+1))*2.8; // 속도 감소 너프
                 }
                 break;
             case 'lim_stop_go':
                 if(this.life === 30) { this.p1 = this.vx; this.p2 = this.vy; this.vx = 0; this.vy = 0; }
-                if(this.life === 60) { this.vx = this.p1 * 2.0; this.vy = this.p2 * 2.0; }
+                if(this.life === 60) { this.vx = this.p1 * 1.5; this.vy = this.p2 * 1.5; } // 너프
                 break;
             case 'ring_collapse':
                 let rdx = this.x - this.p1; let rdy = this.y - this.p2; let rdist = Math.hypot(rdx, rdy);
-                if(rdist > 2) { this.x -= (rdx/rdist)*1.52; this.y -= (rdy/rdist)*1.52; }
+                if(rdist > 2) { this.x -= (rdx/rdist)*1.2; this.y -= (rdy/rdist)*1.2; } // 너프 적용
                 break;
             case 'shift_angle_run':
                 const rx = this.vx * Math.cos(this.p1) - this.vy * Math.sin(this.p1);
@@ -691,143 +716,147 @@ class PremiumBullet {
     }
 }
 
+// 30% 너프, 스테이지 2 추가 및 각 파라미터 조정 적용 완료
 function spawnLayerPattern(stage, pId) {
     const cx = canvas.width / 2; const cy = canvas.height / 2;
     const color = STAGES[stage] ? STAGES[stage].color : "#fff";
-    const pc = getPcMult(); // PC 난이도 적용
+    const pc = getPcMult(); 
     
     if(!isHardMode) {
         if (stage === 0) {
-            if (pId === 0 && frame % Math.floor(45/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.5*pc, 7, '#777777', 'normal'));
-            if (pId === 1 && frame % Math.floor(55/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.5*pc, 7, '#555555', 'normal'));
-            if (pId === 2 && frame % Math.floor(60/pc) === 0) { bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 1.8*pc, 0, 6, '#666', 'normal')); bullets.push(new PremiumBullet(canvas.width+15, Math.random()*canvas.height, -1.8*pc, 0, 6, '#666', 'normal')); }
-            if (pId === 3 && frame % Math.floor(70/pc) === 0) bullets.push(new PremiumBullet(cx + (Math.random()-0.5)*100, cy + (Math.random()-0.5)*100, (Math.random()-0.5)*2*pc, (Math.random()-0.5)*2*pc, 5, '#444', 'asymptotic_homing', 0.08, 2.5*pc)); // 점근유도 교체
-            if (pId === 4 && frame % Math.floor(90/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 0.8*pc, 14, '#888', 'normal'));
+            if (pId === 0 && frame % Math.floor(60/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.2*pc, 7, '#777777', 'normal'));
+            if (pId === 1 && frame % Math.floor(75/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.2*pc, 7, '#555555', 'normal'));
+            if (pId === 2 && frame % Math.floor(80/pc) === 0) { bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 1.4*pc, 0, 6, '#666', 'normal')); bullets.push(new PremiumBullet(canvas.width+15, Math.random()*canvas.height, -1.4*pc, 0, 6, '#666', 'normal')); }
+            if (pId === 3 && frame % Math.floor(90/pc) === 0) bullets.push(new PremiumBullet(cx + (Math.random()-0.5)*80, cy + (Math.random()-0.5)*80, (Math.random()-0.5)*1.4*pc, (Math.random()-0.5)*1.4*pc, 5, '#444', 'asymptotic_homing', 0.06, 2.0*pc));
+            if (pId === 4 && frame % Math.floor(120/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 0.6*pc, 14, '#888', 'normal'));
         }
         else if (stage === 1) {
-            if (pId === 0 && frame % 20 === 0) bullets.push(new PremiumBullet(cx, cy, Math.cos(frame*0.08)*1.8*pc, Math.sin(frame*0.08)*1.8*pc, 5, color, 'normal'));
-            if (pId === 1 && frame % 30 === 0) { let t = frame*0.05; for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(t+(Math.PI/2)*i)*2.5*pc, Math.sin(t+(Math.PI/2)*i)*2.5*pc, 5, '#00ffff', 'shift_angle_run', 0.02)); }
-            if (pId === 2 && frame % 65 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.2)*2.3*pc, Math.sin(ta+i*0.2)*2.3*pc, 5.5, color, 'normal')); }
-            if (pId === 3 && frame % 15 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 2.2*pc, 4, color, 'sine_wave', 2.0));
-            if (pId === 4 && frame % 80 === 0) { for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/8)*i)*1.5*pc, Math.sin((Math.PI*2/8)*i)*1.5*pc, 6, '#fff', 'normal')); }
+            if (pId === 0 && frame % 25 === 0) bullets.push(new PremiumBullet(cx, cy, Math.cos(frame*0.08)*1.4*pc, Math.sin(frame*0.08)*1.4*pc, 5, color, 'normal'));
+            if (pId === 1 && frame % 40 === 0) { let t = frame*0.05; for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(t+(Math.PI/2)*i)*2.0*pc, Math.sin(t+(Math.PI/2)*i)*2.0*pc, 5, '#00ffff', 'shift_angle_run', 0.02)); }
+            if (pId === 2 && frame % 85 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.2)*1.8*pc, Math.sin(ta+i*0.2)*1.8*pc, 5.5, color, 'normal')); }
+            if (pId === 3 && frame % 20 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.8*pc, 4, color, 'sine_wave', 1.5));
+            if (pId === 4 && frame % 100 === 0) { for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/6)*i)*1.2*pc, Math.sin((Math.PI*2/6)*i)*1.2*pc, 6, '#fff', 'normal')); }
         }
-        else if (stage === 2) {
-            if (pId === 0 && frame % 40 === 0) { for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/6)*i)*1.8*pc, Math.sin((Math.PI*2/6)*i)*1.8*pc, 6, color, 'normal')); }
-            if (pId === 1 && frame % 50 === 0) { let rx = Math.random()*canvas.width; bullets.push(new PremiumBullet(rx, -15, 0, 2.0*pc, 5, color, 'asymptotic_homing', 0.1, 3.5*pc)); bullets.push(new PremiumBullet(rx, canvas.height+15, 0, -2.0*pc, 5, color, 'asymptotic_homing', 0.1, 3.5*pc)); } // 점근유도 교체
-            if (pId === 2 && frame % 55 === 0) { let ry = Math.random()*canvas.height; bullets.push(new PremiumBullet(-15, ry, 2.0*pc, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width+15, ry, -2.0*pc, 0, 5, color, 'normal')); }
-            if (pId === 3 && frame % 30 === 0) { let rot = frame*0.05; for(let i=0; i<4; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(rot+(Math.PI/2)*i)*2.0*pc, Math.sin(rot+(Math.PI/2)*i)*2.0*pc, 5.5, '#ffffaa', 'normal')); }
-            if (pId === 4 && frame % 75 === 0) { for(let i=0; i<12*pc; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/12)*i)*150, cy + Math.sin((Math.PI*2/12)*i)*150, 0, 0, 5, color, 'ring_collapse', cx, cy)); }
+        else if (stage === 2) { // 신규 스테이지 '2'
+            if (pId === 0 && frame % 45 === 0) { bullets.push(new PremiumBullet(-20, player.y, 1.5*pc, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -1.5*pc, 0, 5, color, 'normal')); }
+            if (pId === 1 && frame % 55 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 1.5*pc, 5, color, 'normal')); bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -1.5*pc, 5, color, 'normal')); }
+            if (pId === 2 && frame % 70 === 0) { let ta = Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*2*pc, Math.sin(ta)*2*pc, 6, '#77ff77', 'normal')); }
+            if (pId === 3 && frame % 60 === 0) { for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 1.8*pc, 4, color, 'sine_wave', 1.5)); }
+            if (pId === 4 && frame % 80 === 0) { for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI/3)*i)*1.5*pc, Math.sin((Math.PI/3)*i)*1.5*pc, 5, '#fff', 'normal')); }
         }
-        else if (stage === 3) {
-            if (pId === 0 && frame % 40 === 0) { for(let i=0; i<3*pc; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.5*pc, 5, color, 'accelerate')); bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.5*pc, 0, 5, color, 'accelerate')); } }
-            if (pId === 1 && frame % 45 === 0) { let a = Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx+Math.cos(a)*200, cy+Math.sin(a)*200, -Math.cos(a)*1.5*pc, -Math.sin(a)*1.5*pc, 6, '#ffaa00', 'sine_wave', 2)); }
-            if (pId === 2 && frame % 45 === 0) bullets.push(new PremiumBullet(-20, player.y, 3.0*pc, 0, 4.5, '#ffcc00', 'normal'));
-            if (pId === 3 && frame % 45 === 0) bullets.push(new PremiumBullet(canvas.width+20, player.y, -3.0*pc, 0, 4.5, '#ffcc00', 'normal'));
-            if (pId === 4 && frame % 40 === 0) bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*4*pc, (Math.random()-0.5)*4*pc, 5, '#fff', 'normal'));
+        else if (stage === 3) { // 구 10
+            if (pId === 0 && frame % 50 === 0) { for(let i=0; i<5*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/5)*i)*1.5*pc, Math.sin((Math.PI*2/5)*i)*1.5*pc, 6, color, 'normal')); }
+            if (pId === 1 && frame % 65 === 0) { let rx = Math.random()*canvas.width; bullets.push(new PremiumBullet(rx, -15, 0, 1.6*pc, 5, color, 'asymptotic_homing', 0.07, 2.5*pc)); } 
+            if (pId === 2 && frame % 75 === 0) { let ry = Math.random()*canvas.height; bullets.push(new PremiumBullet(-15, ry, 1.6*pc, 0, 5, color, 'normal')); bullets.push(new PremiumBullet(canvas.width+15, ry, -1.6*pc, 0, 5, color, 'normal')); }
+            if (pId === 3 && frame % 40 === 0) { let rot = frame*0.05; for(let i=0; i<3; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(rot+(Math.PI*2/3)*i)*1.6*pc, Math.sin(rot+(Math.PI*2/3)*i)*1.6*pc, 5.5, '#ffffaa', 'normal')); }
+            if (pId === 4 && frame % 90 === 0) { for(let i=0; i<10*pc; i++) bullets.push(new PremiumBullet(cx + Math.cos((Math.PI*2/10)*i)*150, cy + Math.sin((Math.PI*2/10)*i)*150, 0, 0, 5, color, 'ring_collapse', cx, cy)); }
         }
-        else if (stage === 4) {
-            if (pId === 0 && frame % 35 === 0) { for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, (Math.random()-0.5)*2, 1.8*pc, 5, color, 'normal')); }
-            if (pId === 1 && frame % 55 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=0; i<5*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta + (i-2)*0.2)*0.8*pc, Math.sin(ta + (i-2)*0.2)*0.8*pc, 5, '#ff5500', 'normal')); }
-            if (pId === 2 && frame % 10 === 0) { let ang = frame * 0.15; bullets.push(new PremiumBullet(cx, cy, Math.cos(ang)*2.5*pc, Math.sin(ang)*2.5*pc, 4, '#ff7700', 'normal')); }
-            if (pId === 3 && frame % 40 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*3.0*pc, Math.sin(ta)*3.0*pc, 6, '#fff', 'normal')); }
-            if (pId === 4 && frame % 65 === 0) { let t=frame*0.02; for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*2*pc, Math.cos(t+i)*2*pc, 5, color, 'normal')); }
+        else if (stage === 4) { // 구 100 (너프됨)
+            if (pId === 0 && frame % 50 === 0) { for(let i=0; i<3*pc; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0*pc, 5, color, 'accelerate')); } }
+            if (pId === 1 && frame % 60 === 0) { let a = Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx+Math.cos(a)*200, cy+Math.sin(a)*200, -Math.cos(a)*1.2*pc, -Math.sin(a)*1.2*pc, 6, '#ffaa00', 'sine_wave', 1.5)); }
+            if (pId === 2 && frame % 60 === 0) bullets.push(new PremiumBullet(-20, player.y, 2.4*pc, 0, 4.5, '#ffcc00', 'normal'));
+            if (pId === 3 && frame % 60 === 0) bullets.push(new PremiumBullet(canvas.width+20, player.y, -2.4*pc, 0, 4.5, '#ffcc00', 'normal'));
+            if (pId === 4 && frame % 55 === 0) bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*3.2*pc, (Math.random()-0.5)*3.2*pc, 5, '#fff', 'normal'));
         }
-        else if (stage === 5) {
-            if (pId === 0 && frame % 30 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0*pc, 5, `hsl(${(frame)%360},100%,65%)`, 'normal'));
-            if (pId === 1 && frame % 25 === 0) { for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.5*pc, 4.5, '#ff00ff', 'normal')); }
-            if (pId === 2 && frame % 45 === 0) { let sx = (frame%90===0)? -20 : canvas.width+20; let vx = (frame%90===0)? 3*pc : -3*pc; for(let i=-2; i<=2; i++) bullets.push(new PremiumBullet(sx, cy+i*30, vx, 0, 5, '#00ffff', 'sine_wave', 2)); }
-            if (pId === 3 && frame % 40 === 0) { let ra=frame*0.04; for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI/2)*i)*1.6*pc, Math.sin(ra+(Math.PI/2)*i)*1.6*pc, 5, color, 'shift_angle_run', 0.002)); }
-            if (pId === 4 && frame % 50 === 0) bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.2*pc, Math.sin(frame*0.1)*1, 5, '#fff', 'normal'));
+        else if (stage === 5) { // 구 10000 (첫 패턴 대폭 너프됨)
+            if (pId === 0 && frame % 45 === 0) { for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, (Math.random()-0.5)*1.0, 1.3*pc, 5, color, 'normal')); }
+            if (pId === 1 && frame % 70 === 0) { let ta = Math.atan2(player.y - cy, player.x - cx); for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta + (i-1.5)*0.2)*0.6*pc, Math.sin(ta + (i-1.5)*0.2)*0.6*pc, 5, '#ff5500', 'normal')); }
+            if (pId === 2 && frame % 15 === 0) { let ang = frame * 0.15; bullets.push(new PremiumBullet(cx, cy, Math.cos(ang)*2.0*pc, Math.sin(ang)*2.0*pc, 4, '#ff7700', 'normal')); }
+            if (pId === 3 && frame % 55 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); bullets.push(new PremiumBullet(cx, cy, Math.cos(ta)*2.4*pc, Math.sin(ta)*2.4*pc, 6, '#fff', 'normal')); }
+            if (pId === 4 && frame % 80 === 0) { let t=frame*0.02; for(let i=0; i<5*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*1.6*pc, Math.cos(t+i)*1.6*pc, 5, color, 'normal')); }
         }
-        else if (stage === 6) {
-            if (pId === 0 && frame % 35 === 0) { bullets.push(new PremiumBullet(cx, cy, 0, 0, 6, color, 'asymptotic_homing', 0.15, 4.0*pc)); } // 점근유도 교체
-            if (pId === 1 && frame % 40 === 0) { let rx = Math.random()*canvas.width; for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(rx, -10 - i*20, 0, 2.5*pc, 5.5, color, 'normal')); }
-            if (pId === 2 && frame % 60 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+(Math.PI/3)*i)*2*pc, Math.sin(ta+(Math.PI/3)*i)*2*pc, 5, color, 'accelerate')); }
-            if (pId === 3 && frame % 35 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 1.5*pc, 6, '#ff88aa', 'asymptotic_homing', 0.08, 3.5*pc)); } // 점근유도 교체
-            if (pId === 4 && frame % 55 === 0) { let side = Math.random()>0.5?-20:canvas.width+20; bullets.push(new PremiumBullet(side, player.y, side<0?3*pc:-3*pc, 0, 5, color, 'shift_angle_run', side<0?0.02:-0.02)); }
+        else if (stage === 6) { // 구 10^10
+            if (pId === 0 && frame % 40 === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 1.6*pc, 5, `hsl(${(frame)%360},100%,65%)`, 'normal'));
+            if (pId === 1 && frame % 35 === 0) { for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0*pc, 4.5, '#ff00ff', 'normal')); }
+            if (pId === 2 && frame % 60 === 0) { let sx = (frame%120===0)? -20 : canvas.width+20; let vx = (frame%120===0)? 2.4*pc : -2.4*pc; for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(sx, cy+i*40, vx, 0, 5, '#00ffff', 'sine_wave', 1.5)); }
+            if (pId === 3 && frame % 55 === 0) { let ra=frame*0.04; for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/3)*i)*1.3*pc, Math.sin(ra+(Math.PI*2/3)*i)*1.3*pc, 5, color, 'shift_angle_run', 0.002)); }
+            if (pId === 4 && frame % 70 === 0) bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 1.8*pc, Math.sin(frame*0.1)*1, 5, '#fff', 'normal'));
         }
-        else if (stage === 7) {
-            if (pId === 0 && frame % 18 === 0) { let ra=frame*0.08; for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI/2)*i)*2.5*pc, Math.sin(ra+(Math.PI/2)*i)*2.5*pc, 5, color, 'normal')); }
-            if (pId === 1 && frame % 20 === 0) { let a = Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx+Math.cos(a)*250, cy+Math.sin(a)*250, -Math.cos(a)*2*pc, -Math.sin(a)*2*pc, 5, color, 'sine_wave', 1.5)); }
-            if (pId === 2 && frame % 60 === 0) { for(let i=0; i<10*pc; i++) { let a=(Math.PI*2/10)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*100, player.y+Math.sin(a)*100, 0, 0, 4, color, 'void_cross_boom')); } }
-            if (pId === 3 && frame % 30 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, (Math.random()-0.5), 2.5*pc, 6, '#fff', 'accelerate')); }
-            if (pId === 4 && frame % 80 === 0) { for(let i=0; i<5*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(frame*0.1+i)*3*pc, Math.sin(frame*0.1+i)*3*pc, 7, color, 'ring_collapse', cx, cy)); }
+        else if (stage === 7) { // 구 1e21
+            if (pId === 0 && frame % 50 === 0) { bullets.push(new PremiumBullet(cx, cy, 0, 0, 6, color, 'asymptotic_homing', 0.1, 3.0*pc)); } 
+            if (pId === 1 && frame % 55 === 0) { let rx = Math.random()*canvas.width; for(let i=0; i<2*pc; i++) bullets.push(new PremiumBullet(rx, -10 - i*20, 0, 2.0*pc, 5.5, color, 'normal')); }
+            if (pId === 2 && frame % 80 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+(Math.PI/2)*i)*1.6*pc, Math.sin(ta+(Math.PI/2)*i)*1.6*pc, 5, color, 'accelerate')); }
+            if (pId === 3 && frame % 45 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 1.2*pc, 6, '#ff88aa', 'asymptotic_homing', 0.06, 2.5*pc)); } 
+            if (pId === 4 && frame % 75 === 0) { let side = Math.random()>0.5?-20:canvas.width+20; bullets.push(new PremiumBullet(side, player.y, side<0?2.4*pc:-2.4*pc, 0, 5, color, 'shift_angle_run', side<0?0.015:-0.015)); }
+        }
+        else if (stage === 8) { // 구 1e308 (너프됨)
+            if (pId === 0 && frame % 24 === 0) { let ra=frame*0.08; for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/3)*i)*2.0*pc, Math.sin(ra+(Math.PI*2/3)*i)*2.0*pc, 5, color, 'normal')); }
+            if (pId === 1 && frame % 28 === 0) { let a = Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx+Math.cos(a)*250, cy+Math.sin(a)*250, -Math.cos(a)*1.6*pc, -Math.sin(a)*1.6*pc, 5, color, 'sine_wave', 1.0)); }
+            if (pId === 2 && frame % 80 === 0) { for(let i=0; i<8*pc; i++) { let a=(Math.PI*2/8)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*100, player.y+Math.sin(a)*100, 0, 0, 4, color, 'void_cross_boom')); } }
+            if (pId === 3 && frame % 40 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, (Math.random()-0.5)*0.5, 2.0*pc, 6, '#fff', 'accelerate')); }
+            if (pId === 4 && frame % 100 === 0) { for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(frame*0.1+i)*2.4*pc, Math.sin(frame*0.1+i)*2.4*pc, 7, color, 'ring_collapse', cx, cy)); }
         }
     } else {
+        // 하드 모드 적용 구간 (전체적인 무작위성, 유도, 스피드 너프)
         if (stage === 0) {
-            if (pId === 0 && frame % Math.floor(55/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.0, 7.5, '#ff3355', 'asymptotic_homing', 0.12, 3.5*pc)); // 점근 교체
-            if (pId === 1 && frame % Math.floor(60/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.0, 7.5, '#ff3355', 'asymptotic_homing', 0.12, 3.5*pc)); // 점근 교체
-            if (pId === 2 && frame % Math.floor(75/pc) === 0) { bullets.push(new PremiumBullet(-15, player.y, 0.5*pc, 0, 6, '#ffaa00', 'void_cross_boom')); bullets.push(new PremiumBullet(canvas.width+15, player.y, -0.5*pc, 0, 6, '#ffaa00', 'void_cross_boom')); }
-            if (pId === 3 && frame % Math.floor(100/pc) === 0) { for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx+Math.cos((Math.PI/2)*i)*150, cy+Math.sin((Math.PI/2)*i)*150, 0, 0, 6, '#333333', 'void_sink_black')); }
-            if (pId === 4 && frame % Math.floor(120/pc) === 0) { let ta=Math.atan2(player.y-(-20), player.x-cx); bullets.push(new PremiumBullet(cx, -20, Math.cos(ta)*2.2*pc, Math.sin(ta)*2.2*pc, 16, '#ff0000', 'normal')); }
+            if (pId === 0 && frame % Math.floor(70/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.0, 7.5, '#ff3355', 'asymptotic_homing', 0.08, 2.5*pc)); 
+            if (pId === 1 && frame % Math.floor(80/pc) === 0) bullets.push(new PremiumBullet(Math.random()*canvas.width, canvas.height+15, 0, -1.0, 7.5, '#ff3355', 'asymptotic_homing', 0.08, 2.5*pc)); 
+            if (pId === 2 && frame % Math.floor(90/pc) === 0) { bullets.push(new PremiumBullet(-15, player.y, 0.5*pc, 0, 6, '#ffaa00', 'void_cross_boom')); }
+            if (pId === 3 && frame % Math.floor(120/pc) === 0) { for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(cx+Math.cos((Math.PI*2/3)*i)*150, cy+Math.sin((Math.PI*2/3)*i)*150, 0, 0, 6, '#333333', 'void_sink_black')); }
+            if (pId === 4 && frame % Math.floor(150/pc) === 0) { let ta=Math.atan2(player.y-(-20), player.x-cx); bullets.push(new PremiumBullet(cx, -20, Math.cos(ta)*1.8*pc, Math.sin(ta)*1.8*pc, 16, '#ff0000', 'normal')); }
         }
         else if (stage === 1) {
-            if (pId === 0 && frame % 20 === 0) bullets.push(new PremiumBullet(cx + Math.cos(frame*0.14)*260, cy + Math.sin(frame*0.14)*260, 0, 0, 5, '#00ffcc', 'hard_vortex_sink', cx, cy));
-            if (pId === 1 && frame % 25 === 0) bullets.push(new PremiumBullet(cx + Math.cos(-frame*0.1)*300, cy + Math.sin(-frame*0.1)*300, 0, 0, 5.5, '#ff00ff', 'prime_blade_in', cx, cy));
-            if (pId === 2 && frame % 85 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.15)*2.0*pc, Math.sin(ta+i*0.15)*2.0*pc, 5, '#ffffff', 'normal')); }
-            if (pId === 3 && frame % 20 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.5*pc, 4.5, color, 'sine_wave', 2.2)); bullets.push(new PremiumBullet(-15, Math.random()*canvas.height, 1.5*pc, 0, 4.5, color, 'cos_wave', 2.2)); }
-            if (pId === 4 && frame % 100 === 0) { for(let i=0; i<10*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/10)*i)*1.5*pc, Math.sin((Math.PI*2/10)*i)*1.5*pc, 6, '#ffff00', 'prime_return_ring')); }
+            if (pId === 0 && frame % 25 === 0) bullets.push(new PremiumBullet(cx + Math.cos(frame*0.14)*260, cy + Math.sin(frame*0.14)*260, 0, 0, 5, '#00ffcc', 'hard_vortex_sink', cx, cy));
+            if (pId === 1 && frame % 35 === 0) bullets.push(new PremiumBullet(cx + Math.cos(-frame*0.1)*300, cy + Math.sin(-frame*0.1)*300, 0, 0, 5.5, '#ff00ff', 'prime_blade_in', cx, cy));
+            if (pId === 2 && frame % 100 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.15)*1.6*pc, Math.sin(ta+i*0.15)*1.6*pc, 5, '#ffffff', 'normal')); }
+            if (pId === 3 && frame % 25 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.2*pc, 4.5, color, 'sine_wave', 1.8)); }
+            if (pId === 4 && frame % 120 === 0) { for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/8)*i)*1.2*pc, Math.sin((Math.PI*2/8)*i)*1.2*pc, 6, '#ffff00', 'prime_return_ring')); }
         }
-        else if (stage === 2) {
-            if (pId === 0 && frame % 65 === 0) { for(let i=0; i<5*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/5)*i+(frame*0.01))*0.8*pc, Math.sin((Math.PI*2/5)*i+(frame*0.01))*0.8*pc, 5, '#ffff00', 'hard_bounce_laser')); }
-            if (pId === 1 && frame % 75 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.5, 5.5, color, 'asymptotic_homing', 0.15, 4.5*pc)); } // 점근 교체
-            if (pId === 2 && frame % 30 === 0) { bullets.push(new PremiumBullet(8, player.y, 2.4*pc, 0, 6, '#ff0055', 'normal')); bullets.push(new PremiumBullet(canvas.width-8, player.y, -2.4*pc, 0, 6, '#ff0055', 'normal')); }
-            if (pId === 3 && frame % 45 === 0) { let rot=frame*0.09; for(let i=0; i<4*pc; i++) { let a = rot+(Math.PI/2)*i; let dir=(frame%50<25)?1:-1; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.2*pc, Math.sin(a)*1.2*pc, 5, '#00ffff', 'shift_angle_run', 0.01*dir)); } }
-            if (pId === 4 && frame % 90 === 0) { for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0*pc, 6, '#ff33ff', 'hard_bounce_laser')); }
+        else if (stage === 2) { // 신규 하드 스테이지 '2'
+            if (pId === 0 && frame % 35 === 0) { bullets.push(new PremiumBullet(-20, player.y, 2*pc, 0, 5, '#33ff33', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -2*pc, 0, 5, '#33ff33', 'normal')); }
+            if (pId === 1 && frame % 45 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 2*pc, 5, '#33ff33', 'normal')); bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -2*pc, 5, '#33ff33', 'normal')); }
+            if (pId === 2 && frame % 55 === 0) { let ta = Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.2)*2.5*pc, Math.sin(ta+i*0.2)*2.5*pc, 5, '#55ff55', 'normal')); }
+            if (pId === 3 && frame % 40 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, (Math.random()-0.5), 2.2*pc, 5, color, 'sine_wave', 2.0)); }
+            if (pId === 4 && frame % 65 === 0) { for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI/4)*i)*2*pc, Math.sin((Math.PI/4)*i)*2*pc, 6, '#fff', 'shift_angle_run', 0.02)); }
         }
-        else if (stage === 3) {
-            if (pId === 0 && frame % 30 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 2.2*pc, 5, '#ffa500', 'normal')); bullets.push(new PremiumBullet(-20, player.y, 2.2*pc, 0, 5, '#ffa500', 'normal')); }
-            if (pId === 1 && frame % 38 === 0) { bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -2.2*pc, 5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y, -2.2*pc, 0, 5, '#ff5500', 'normal')); }
-            if (pId === 2 && frame % 75 === 0) { for(let y=0; y<canvas.height; y+=60) bullets.push(new PremiumBullet(-25, y, 2.4*pc, 0, 4, '#ff00ff', 'normal')); }
-            if (pId === 3 && frame % 75 === 0) { for(let y=30; y<canvas.height; y+=60) bullets.push(new PremiumBullet(canvas.width+25, y, -2.4*pc, 0, 4, '#00ffff', 'normal')); }
-            if (pId === 4 && frame % 16 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*4.3*pc, (Math.random()-0.5)*4.3*pc, 4, '#ffffff', 'normal')); }
+        else if (stage === 3) { // 구 10
+            if (pId === 0 && frame % 80 === 0) { for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos((Math.PI*2/4)*i+(frame*0.01))*0.6*pc, Math.sin((Math.PI*2/4)*i+(frame*0.01))*0.6*pc, 5, '#ffff00', 'hard_bounce_laser')); }
+            if (pId === 1 && frame % 90 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -15, 0, 1.2, 5.5, color, 'asymptotic_homing', 0.1, 3.5*pc)); } 
+            if (pId === 2 && frame % 40 === 0) { bullets.push(new PremiumBullet(8, player.y, 2.0*pc, 0, 6, '#ff0055', 'normal')); bullets.push(new PremiumBullet(canvas.width-8, player.y, -2.0*pc, 0, 6, '#ff0055', 'normal')); }
+            if (pId === 3 && frame % 55 === 0) { let rot=frame*0.09; for(let i=0; i<3*pc; i++) { let a = rot+(Math.PI*2/3)*i; let dir=(frame%50<25)?1:-1; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.0*pc, Math.sin(a)*1.0*pc, 5, '#00ffff', 'shift_angle_run', 0.01*dir)); } }
+            if (pId === 4 && frame % 110 === 0) { for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 1.6*pc, 6, '#ff33ff', 'hard_bounce_laser')); }
         }
-        else if (stage === 4) {
-            if (pId === 0 && frame % 18 === 0) { bullets.push(new PremiumBullet(player.x - 65, -20, 0, 2.4*pc, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(player.x + 65, -20, 0, 2.4*pc, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(-20, player.y - 65, 2.4*pc, 0, 4.5, '#ffaa00', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, player.y + 65, -2.4*pc, 0, 4.5, '#ffaa00', 'normal')); }
-            if (pId === 1 && frame % 75 === 0) { for(let i=0; i<14*pc; i++) { let a=(Math.PI*2/14)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*130, player.y+Math.sin(a)*130, -Math.cos(a)*0.8*pc, -Math.sin(a)*0.8*pc, 4, '#ff3300', 'normal')); } }
-            if (pId === 2 && frame % 30 === 0) { let a = frame*0.2; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*3*pc, Math.sin(a)*3*pc, 5, '#fff', 'shift_angle_run', 0.05)); }
-            if (pId === 3 && frame % 60 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-2; i<=2; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.1)*3.5*pc, Math.sin(ta+i*0.1)*3.5*pc, 5, '#ff4400', 'asymptotic_homing', 0.1, 4.5*pc)); } // 점근 교체
-            if (pId === 4 && frame % 85 === 0) { let t=frame*0.05; for(let i=0; i<12*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*2.2*pc, Math.cos(t+i)*2.2*pc, 4.5, color, 'normal')); }
+        else if (stage === 4) { // 구 100
+            if (pId === 0 && frame % 40 === 0) { bullets.push(new PremiumBullet(player.x, -20, 0, 1.8*pc, 5, '#ffa500', 'normal')); bullets.push(new PremiumBullet(-20, player.y, 1.8*pc, 0, 5, '#ffa500', 'normal')); }
+            if (pId === 1 && frame % 48 === 0) { bullets.push(new PremiumBullet(player.x, canvas.height+20, 0, -1.8*pc, 5, '#ff5500', 'normal')); }
+            if (pId === 2 && frame % 90 === 0) { for(let y=0; y<canvas.height; y+=80) bullets.push(new PremiumBullet(-25, y, 2.0*pc, 0, 4, '#ff00ff', 'normal')); }
+            if (pId === 3 && frame % 90 === 0) { for(let y=40; y<canvas.height; y+=80) bullets.push(new PremiumBullet(canvas.width+25, y, -2.0*pc, 0, 4, '#00ffff', 'normal')); }
+            if (pId === 4 && frame % 22 === 0) { bullets.push(new PremiumBullet(cx, cy, (Math.random()-0.5)*3.4*pc, (Math.random()-0.5)*3.4*pc, 4, '#ffffff', 'normal')); }
         }
-        else if (stage === 5) {
-            if (pId === 0 && frame % 40 === 0) { let sa=Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx + Math.cos(sa)*260, cy + Math.sin(sa)*260, 0, 0, 5.5, `hsl(${(frame)%360},100%,50%)`, 'hard_blackhole')); }
-            if (pId === 1 && frame % 24 === 0) { bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.6*pc, 0, 5, '#ff00bb', 'normal')); bullets.push(new PremiumBullet(canvas.width+20, Math.random()*canvas.height, -2.6*pc, 0, 5, '#ff00bb', 'normal')); }
-            if (pId === 2 && frame % 55 === 0) { for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -25, (Math.random()-0.5)*2.0, 2.0*pc, 5, '#00ffff', 'normal')); }
-            if (pId === 3 && frame % 40 === 0) { let ra=frame*0.07; for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/6)*i)*1.0*pc, Math.sin(ra+(Math.PI*2/6)*i)*1.0*pc, 4.5, '#ffff00', 'shift_angle_run', 0.002)); }
-            if (pId === 4 && frame % 28 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 2.0, 7, '#ffffff', 'asymptotic_homing', 0.12, 4.5*pc)); } // 점근 교체
+        else if (stage === 5) { // 구 10000 하드 (대폭 너프)
+            if (pId === 0 && frame % 25 === 0) { bullets.push(new PremiumBullet(player.x - 70, -20, 0, 1.7*pc, 4.5, '#ff5500', 'normal')); bullets.push(new PremiumBullet(player.x + 70, -20, 0, 1.7*pc, 4.5, '#ff5500', 'normal')); } // 간격 넓히고 속도/주기 감소
+            if (pId === 1 && frame % 90 === 0) { for(let i=0; i<10*pc; i++) { let a=(Math.PI*2/10)*i; bullets.push(new PremiumBullet(player.x+Math.cos(a)*130, player.y+Math.sin(a)*130, -Math.cos(a)*0.6*pc, -Math.sin(a)*0.6*pc, 4, '#ff3300', 'normal')); } }
+            if (pId === 2 && frame % 40 === 0) { let a = frame*0.2; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*2.4*pc, Math.sin(a)*2.4*pc, 5, '#fff', 'shift_angle_run', 0.05)); }
+            if (pId === 3 && frame % 80 === 0) { let ta=Math.atan2(player.y-cy, player.x-cx); for(let i=-1; i<=1; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ta+i*0.1)*2.8*pc, Math.sin(ta+i*0.1)*2.8*pc, 5, '#ff4400', 'asymptotic_homing', 0.07, 3.5*pc)); } 
+            if (pId === 4 && frame % 100 === 0) { let t=frame*0.05; for(let i=0; i<9*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.sin(t+i)*1.8*pc, Math.cos(t+i)*1.8*pc, 4.5, color, 'normal')); }
         }
-        else if (stage === 6) {
-            if (pId === 0 && frame % 55 === 0) {
-                let targetAngle = Math.atan2(player.y - cy, player.x - cx); let slowSpd = (0.55 / 3) * pc;
+        else if (stage === 6) { // 구 10^10 하드
+            if (pId === 0 && frame % 55 === 0) { let sa=Math.random()*Math.PI*2; bullets.push(new PremiumBullet(cx + Math.cos(sa)*260, cy + Math.sin(sa)*260, 0, 0, 5.5, `hsl(${(frame)%360},100%,50%)`, 'hard_blackhole')); }
+            if (pId === 1 && frame % 30 === 0) { bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 2.0*pc, 0, 5, '#ff00bb', 'normal')); }
+            if (pId === 2 && frame % 70 === 0) { for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, -25, (Math.random()-0.5)*1.5, 1.6*pc, 5, '#00ffff', 'normal')); }
+            if (pId === 3 && frame % 50 === 0) { let ra=frame*0.07; for(let i=0; i<5*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(ra+(Math.PI*2/5)*i)*0.8*pc, Math.sin(ra+(Math.PI*2/5)*i)*0.8*pc, 4.5, '#ffff00', 'shift_angle_run', 0.002)); }
+            if (pId === 4 && frame % 38 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 1.6, 7, '#ffffff', 'asymptotic_homing', 0.08, 3.5*pc)); } 
+        }
+        else if (stage === 7) { // 구 1e21 하드
+            if (pId === 0 && frame % 70 === 0) {
+                let targetAngle = Math.atan2(player.y - cy, player.x - cx); let slowSpd = (0.4 / 3) * pc;
                 bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle)*slowSpd, Math.sin(targetAngle)*slowSpd, 6.5, '#ff1155', 'normal'));
-                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.16)*slowSpd, Math.sin(targetAngle - 0.16)*slowSpd, 5, '#ff3366', 'normal'));
-                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.32)*slowSpd, Math.sin(targetAngle - 0.32)*slowSpd, 5, '#ff3366', 'normal'));
-                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.16)*slowSpd, Math.sin(targetAngle + 0.16)*slowSpd, 5, '#ff3366', 'normal'));
-                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.32)*slowSpd, Math.sin(targetAngle + 0.32)*slowSpd, 5, '#ff3366', 'normal'));
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle - 0.2)*slowSpd, Math.sin(targetAngle - 0.2)*slowSpd, 5, '#ff3366', 'normal'));
+                bullets.push(new PremiumBullet(cx, cy, Math.cos(targetAngle + 0.2)*slowSpd, Math.sin(targetAngle + 0.2)*slowSpd, 5, '#ff3366', 'normal'));
             }
-            if (pId === 1 && frame % 35 === 0) { let rx = Math.random()>0.5?0:canvas.width; let ry = Math.random()>0.5?0:canvas.height; let dx = player.x-rx, dy = player.y-ry, d = Math.hypot(dx,dy); bullets.push(new PremiumBullet(rx, ry, (dx/d)*3.5*pc, (dy/d)*3.5*pc, 6, '#ff00ff', 'hard_bend_two', 2.0*pc)); }
-            if (pId === 2 && frame % 45 === 0) { for(let i=0; i<4*pc; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 1.5*pc, 7, '#ffaa00', 'void_cross_boom')); } }
-            if (pId === 3 && frame % 60 === 0) { let t=frame*0.1; for(let i=0; i<8*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(t+(Math.PI/4)*i)*2*pc, Math.sin(t+(Math.PI/4)*i)*2*pc, 5, '#ffffff', 'ring_collapse', cx, cy)); }
-            if (pId === 4 && frame % 50 === 0) { for(let i=0; i<4*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 6, '#ff3366', 'hard_blackhole')); }
+            if (pId === 1 && frame % 45 === 0) { let rx = Math.random()>0.5?0:canvas.width; let ry = Math.random()>0.5?0:canvas.height; let dx = player.x-rx, dy = player.y-ry, d = Math.hypot(dx,dy); bullets.push(new PremiumBullet(rx, ry, (dx/d)*2.8*pc, (dy/d)*2.8*pc, 6, '#ff00ff', 'hard_bend_two', 1.6*pc)); }
+            if (pId === 2 && frame % 60 === 0) { for(let i=0; i<3*pc; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -10, 0, 1.2*pc, 7, '#ffaa00', 'void_cross_boom')); } }
+            if (pId === 3 && frame % 75 === 0) { let t=frame*0.1; for(let i=0; i<6*pc; i++) bullets.push(new PremiumBullet(cx, cy, Math.cos(t+(Math.PI*2/6)*i)*1.6*pc, Math.sin(t+(Math.PI*2/6)*i)*1.6*pc, 5, '#ffffff', 'ring_collapse', cx, cy)); }
+            if (pId === 4 && frame % 65 === 0) { for(let i=0; i<3*pc; i++) bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 6, '#ff3366', 'hard_blackhole')); }
         }
-        else if (stage === 7) {
-            // H7 FULL REMAKE: 5배 악랄하게 재창조
-            // H70: 악랄한 블랙홀 점근 유도비 (Asymptotic Rain)
-            if (pId === 0 && frame % 12 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 0, 4.5, '#00ffff', 'asymptotic_homing', 0.2, 5.0*pc)); }
-            
-            // H71: 시공간 절단 (거대 폭파 레이저)
-            if (pId === 1 && frame % 45 === 0) { for(let i=0; i<6*pc; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 7, '#ff0055', 'void_cross_boom')); } }
-            
-            // H72: 중앙 밀집 후 급가속 팽창 
-            if (pId === 2 && frame % 70 === 0) { for(let i=0; i<16*pc; i++) { let a=(Math.PI*2/(16*pc))*i; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*1.0, Math.sin(a)*1.0, 5, '#ffff00', 'accelerate')); } }
-            
-            // H73: 화면 회전 나선 칼날
-            if (pId === 3 && frame % 8 === 0) { let a = frame*0.15; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*4*pc, Math.sin(a)*4*pc, 6, color, 'shift_angle_run', 0.05)); }
-            
-            // H74: 화면 양쪽에서 조여오는 점근 압박망
-            if (pId === 4 && frame % 25 === 0) { 
-                bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 0, 0, 5, '#ff33ff', 'asymptotic_homing', 0.15, 6.0*pc));
-                bullets.push(new PremiumBullet(canvas.width+20, Math.random()*canvas.height, 0, 0, 5, '#ff33ff', 'asymptotic_homing', 0.15, 6.0*pc));
+        else if (stage === 8) { // 구 1e308 하드 (전체 너프)
+            if (pId === 0 && frame % 16 === 0) { bullets.push(new PremiumBullet(Math.random()*canvas.width, -20, 0, 0, 4.5, '#00ffff', 'asymptotic_homing', 0.14, 4.0*pc)); } // 유도력 및 생성 빈도 감소
+            if (pId === 1 && frame % 60 === 0) { for(let i=0; i<4*pc; i++) { bullets.push(new PremiumBullet(Math.random()*canvas.width, Math.random()*canvas.height, 0, 0, 7, '#ff0055', 'void_cross_boom')); } }
+            if (pId === 2 && frame % 90 === 0) { for(let i=0; i<12*pc; i++) { let a=(Math.PI*2/(12*pc))*i; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*0.8, Math.sin(a)*0.8, 5, '#ffff00', 'accelerate')); } }
+            if (pId === 3 && frame % 12 === 0) { let a = frame*0.15; bullets.push(new PremiumBullet(cx, cy, Math.cos(a)*3.2*pc, Math.sin(a)*3.2*pc, 6, color, 'shift_angle_run', 0.05)); }
+            if (pId === 4 && frame % 35 === 0) { 
+                bullets.push(new PremiumBullet(-20, Math.random()*canvas.height, 0, 0, 5, '#ff33ff', 'asymptotic_homing', 0.1, 4.5*pc));
+                bullets.push(new PremiumBullet(canvas.width+20, Math.random()*canvas.height, 0, 0, 5, '#ff33ff', 'asymptotic_homing', 0.1, 4.5*pc));
             }
         }
     }
@@ -857,14 +886,17 @@ function processEliteStackEngine() {
     } else {
         stackCount = Math.min(5, Math.floor(elapsed / 12) + 1);
         
-        // 지수적 Dim 표시 로직
+        // 지수적 Dim 애니메이션 적용
         let displayDim = STAGES[stageIdx].name.split(' ')[0];
-        if (stageIdx === 7) {
-            let prog = Math.min(1.0, elapsed / 60);
-            displayDim = "1e" + Math.floor(308 * prog);
-            if (prog === 0) displayDim = "0";
-            if (prog >= 1) displayDim = "1e308";
+        if (STAGES[stageIdx].val > 1) { // 0이나 1은 제외
+            let sec = Math.min(600, Math.max(0, elapsed));
+            let exponent = Math.pow(1 /(60 / sec), 2);
+            let calculated = Math.pow(STAGES[stageIdx].val, exponent);
+            
+            if(calculated < 1e6) displayDim = ((Math.floor(calculated * 100))/100).toString();
+            else displayDim = calculated.toExponential(2).replace('e+', 'e');
         }
+
         document.getElementById('cur-stage-name').innerText = modeTag + displayDim + " DIM";
         document.getElementById('cur-stage-name').style.color = isHardMode ? "#ff3355" : STAGES[stageIdx].color;
 
@@ -893,7 +925,19 @@ function processEliteStackEngine() {
 function savePermanentScore(finalTime, currentDodgeHits) {
     if(isTestMode) return;
     
-    let baseKey = isInfinityMode ? 'inf' : `stage_${stageIdx}`;
+    // 인피니티 모드 기록 저장 로직 추가
+    if(isInfinityMode) {
+        if(!gameRecords.infRecords) gameRecords.infRecords = [];
+        gameRecords.infRecords.push({
+            time: finalTime,
+            mode: isHardMode ? 'hard' : 'normal',
+            dodgeHits: isDodgeMode ? currentDodgeHits : -1
+        });
+        localStorage.setItem('trans_records_v4_2026', JSON.stringify(gameRecords));
+        return;
+    }
+
+    let baseKey = `stage_${stageIdx}`;
     let subKey = isHardMode ? 'hard' : 'normal';
     
     let timeKey = `${baseKey}_${subKey}_time`;
@@ -983,7 +1027,6 @@ function animate() {
         ctx.moveTo((pPrev.x + pLast.x) / 2, (pPrev.y + pLast.y) / 2); ctx.lineTo(pLast.x, pLast.y); ctx.stroke();
     }
 
-    // 플레이어의 현재 속도 (관성 계산용)
     let pVx = 0; let pVy = 0;
     if(playerHistory.length > 1) {
         pVx = playerHistory[last].x - playerHistory[last-1].x;
@@ -991,10 +1034,20 @@ function animate() {
     }
 
     for (let i = bullets.length - 1; i >= 0; i--) {
-        const b = bullets[i]; b.update(); b.draw(); const dist = Math.hypot(player.x - b.x, player.y - b.y);
+        const b = bullets[i]; b.update(); 
+        
+        // 유도 투사체 벽 닿으면 즉시 삭제
+        if (b.behavior === 'asymptotic_homing' || b.behavior === 'void_sink_black') {
+            if (b.x < -10 || b.x > canvas.width + 10 || b.y < -10 || b.y > canvas.height + 10) {
+                bullets.splice(i, 1);
+                continue;
+            }
+        }
+        
+        b.draw(); const dist = Math.hypot(player.x - b.x, player.y - b.y);
         
         if (dist < player.r + b.r * 0.42) {
-            triggerGlassShatter(b.x, b.y, b.color, pVx, pVy); // 관성 적용
+            triggerGlassShatter(b.x, b.y, b.color, pVx, pVy); 
             
             if(isDodgeMode || isTestMode) {
                 dodgeHitCount++; 
@@ -1015,7 +1068,7 @@ function animate() {
                         document.getElementById('survival-result').innerText = LANG_PACK[gameLang].survivalPrefix + finalScore.toFixed(2) + LANG_PACK[gameLang].survivalSuffix;
                         document.getElementById('game-over').style.display = 'block'; return;
                     } else {
-                        pInvincibility = 90; // 피격 시 1.5초 무적
+                        pInvincibility = 90; 
                     }
                 }
                 bullets.splice(i, 1); continue;
@@ -1033,3 +1086,4 @@ function animate() {
 </script>
 </body>
 </html>
+
